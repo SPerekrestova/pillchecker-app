@@ -4,6 +4,7 @@
 build/
 .flutter-plugins
 .flutter-plugins-dependencies
+.metadata
 *.iml
 
 # IDE
@@ -12,9 +13,15 @@ build/
 *.swp
 *.swo
 
+# Claude Code
+.claude/
+
 # macOS
 .DS_Store
 **/.DS_Store
+
+# Logs
+*.log
 
 # iOS
 ios/Pods/
