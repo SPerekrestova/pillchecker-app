@@ -13,12 +13,13 @@ class ApiException implements Exception {
 class ApiClient {
   final Dio _dio;
 
-  ApiClient({String baseUrl = 'http://localhost:8000'})
-      : _dio = Dio(BaseOptions(
-          baseUrl: baseUrl,
-          connectTimeout: const Duration(seconds: 10),
-          receiveTimeout: const Duration(seconds: 30),
-        ));
+  ApiClient({String baseUrl = 'http://localhost:8000', Dio? dio})
+      : _dio = dio ??
+            Dio(BaseOptions(
+              baseUrl: baseUrl,
+              connectTimeout: const Duration(seconds: 10),
+              receiveTimeout: const Duration(seconds: 30),
+            ));
 
   Future<AnalyzeResponse> analyze(String text) async {
     try {

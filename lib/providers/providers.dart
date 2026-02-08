@@ -29,7 +29,11 @@ class DrugSlot {
 
   const DrugSlot({this.drug, this.manualName});
 
-  String? get displayName => drug?.name ?? manualName;
+  String? get displayName {
+    final name = drug?.name ?? manualName;
+    return (name != null && name.trim().isNotEmpty) ? name : null;
+  }
+
   bool get isFilled => displayName != null;
 
   DrugSlot clear() => const DrugSlot();
