@@ -56,6 +56,30 @@ void main() {
       expect(result.confidence, 1.0);
       expect(result.confidence, isA<double>());
     });
+
+    test('throws when required field "name" is missing', () {
+      final json = {
+        'source': 'ner',
+        'confidence': 0.9,
+      };
+      expect(() => DrugResult.fromJson(json), throwsA(isA<TypeError>()));
+    });
+
+    test('throws when required field "source" is missing', () {
+      final json = {
+        'name': 'Test',
+        'confidence': 0.9,
+      };
+      expect(() => DrugResult.fromJson(json), throwsA(isA<TypeError>()));
+    });
+
+    test('throws when required field "confidence" is missing', () {
+      final json = {
+        'name': 'Test',
+        'source': 'ner',
+      };
+      expect(() => DrugResult.fromJson(json), throwsA(isA<TypeError>()));
+    });
   });
 
   group('DrugResult.toJson', () {

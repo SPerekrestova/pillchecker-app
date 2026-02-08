@@ -58,6 +58,11 @@ void main() {
 
       expect(result, containsAll(['ibuprofen', 'aspirin']));
       expect(result.length, 2);
+      verify(() => mockDio.get('/approximateTerm.json',
+              queryParameters: any(named: 'queryParameters')))
+          .called(1);
+      verify(() => mockDio.get('/rxcui/5640/properties.json')).called(1);
+      verify(() => mockDio.get('/rxcui/1191/properties.json')).called(1);
     });
 
     test('deduplicates rxcui values', () async {
@@ -87,6 +92,7 @@ void main() {
 
       expect(result.length, 1);
       expect(result.first, 'ibuprofen');
+      verify(() => mockDio.get('/rxcui/5640/properties.json')).called(1);
     });
 
     test('returns empty list when no candidates', () async {

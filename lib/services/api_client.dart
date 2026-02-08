@@ -13,6 +13,8 @@ class ApiException implements Exception {
 class ApiClient {
   final Dio _dio;
 
+  /// Creates an API client. When [dio] is provided (e.g. for testing),
+  /// [baseUrl] is ignored — the injected instance's own config is used.
   ApiClient({String baseUrl = 'http://localhost:8000', Dio? dio})
       : _dio = dio ??
             Dio(BaseOptions(

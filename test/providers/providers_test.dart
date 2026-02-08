@@ -44,6 +44,14 @@ void main() {
       expect(slot.isFilled, isFalse);
     });
 
+    test('displayName is null when DrugResult has empty name', () {
+      final slot = DrugSlot(
+        drug: DrugResult(name: '', source: 'ner', confidence: 0.9),
+      );
+      expect(slot.displayName, isNull);
+      expect(slot.isFilled, isFalse);
+    });
+
     test('isFilled is true when drug is set', () {
       final slot = DrugSlot(
         drug: DrugResult(name: 'Ibuprofen', source: 'ner', confidence: 0.9),

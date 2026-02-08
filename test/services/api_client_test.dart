@@ -40,6 +40,8 @@ void main() {
       expect(result.drugs.length, 1);
       expect(result.drugs.first.name, 'Ibuprofen');
       expect(result.rawText, 'Ibuprofen 400mg');
+      verify(() => mockDio.post('/analyze', data: {'text': 'Ibuprofen 400mg'}))
+          .called(1);
     });
 
     test('throws ApiException on connection timeout', () async {
@@ -188,6 +190,9 @@ void main() {
 
       expect(result.safe, isTrue);
       expect(result.interactions, isEmpty);
+      verify(() => mockDio.post('/interactions',
+              data: {'drugs': ['ibuprofen', 'warfarin']}))
+          .called(1);
     });
 
     test('parses unsafe response with interactions', () async {
@@ -215,6 +220,8 @@ void main() {
       expect(result.safe, isFalse);
       expect(result.interactions.length, 1);
       expect(result.interactions[0].severity, 'Major');
+      verify(() => mockDio.post('/interactions', data: any(named: 'data')))
+          .called(1);
     });
 
     test('throws ApiException on connection error', () async {
