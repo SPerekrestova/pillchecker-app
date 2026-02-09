@@ -3,12 +3,13 @@ import 'package:dio/dio.dart';
 class RxNormClient {
   final Dio _dio;
 
-  RxNormClient()
-      : _dio = Dio(BaseOptions(
-          baseUrl: 'https://rxnav.nlm.nih.gov/REST',
-          connectTimeout: const Duration(seconds: 10),
-          receiveTimeout: const Duration(seconds: 10),
-        ));
+  RxNormClient({Dio? dio})
+      : _dio = dio ??
+            Dio(BaseOptions(
+              baseUrl: 'https://rxnav.nlm.nih.gov/REST',
+              connectTimeout: const Duration(seconds: 10),
+              receiveTimeout: const Duration(seconds: 10),
+            ));
 
   /// Returns drug name suggestions for autocomplete.
   /// Uses approximateTerm to find rxcui matches, then resolves names.

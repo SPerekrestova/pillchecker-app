@@ -56,47 +56,52 @@ class _ConfirmScreenState extends ConsumerState<ConfirmScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              if (_error != null)
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: Card(
-                    color: Theme.of(context).colorScheme.errorContainer,
-                    child: Padding(
-                      padding: const EdgeInsets.all(12),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              _error!,
-                              style: TextStyle(
-                                color: Theme.of(context).colorScheme.onErrorContainer,
-                              ),
+              Expanded(
+                child: ListView(
+                  children: [
+                    if (_error != null)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: Card(
+                          color: Theme.of(context).colorScheme.errorContainer,
+                          child: Padding(
+                            padding: const EdgeInsets.all(12),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: Text(
+                                    _error!,
+                                    style: TextStyle(
+                                      color: Theme.of(context).colorScheme.onErrorContainer,
+                                    ),
+                                  ),
+                                ),
+                                TextButton(
+                                  onPressed: _checkInteractions,
+                                  child: const Text('Retry'),
+                                ),
+                              ],
                             ),
                           ),
-                          TextButton(
-                            onPressed: _checkInteractions,
-                            child: const Text('Retry'),
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
-                  ),
+                    for (var i = 0; i < slots.length; i++) ...[
+                      _DrugConfirmCard(
+                        index: i,
+                        slot: slots[i],
+                        isEditing: _editingIndex == i,
+                        onStartEdit: () => setState(() => _editingIndex = i),
+                        onFinishEdit: (name) {
+                          ref.read(drugSlotsProvider.notifier).setManualName(i, name);
+                          setState(() => _editingIndex = null);
+                        },
+                        rxNormClient: ref.read(rxNormClientProvider),
+                      ),
+                      if (i < slots.length - 1) const SizedBox(height: 12),
+                    ],
+                  ],
                 ),
-              for (var i = 0; i < slots.length; i++) ...[
-                _DrugConfirmCard(
-                  index: i,
-                  slot: slots[i],
-                  isEditing: _editingIndex == i,
-                  onStartEdit: () => setState(() => _editingIndex = i),
-                  onFinishEdit: (name) {
-                    ref.read(drugSlotsProvider.notifier).setManualName(i, name);
-                    setState(() => _editingIndex = null);
-                  },
-                  rxNormClient: ref.read(rxNormClientProvider),
-                ),
-                if (i < slots.length - 1) const SizedBox(height: 12),
-              ],
-              const Spacer(),
+              ),
               if (_isLoading)
                 const Padding(
                   padding: EdgeInsets.only(bottom: 16),

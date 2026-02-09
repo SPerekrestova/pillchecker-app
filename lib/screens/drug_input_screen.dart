@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,8 +30,7 @@ class _DrugInputScreenState extends ConsumerState<DrugInputScreen> {
     try {
       HapticFeedback.mediumImpact();
       final ocrService = ref.read(ocrServiceProvider);
-      // Use gallery in debug/simulator, camera on real device
-      final text = await ocrService.scanText(useGallery: kDebugMode);
+      final text = await ocrService.scanText();
 
       if (!mounted) return;
 
@@ -41,6 +39,7 @@ class _DrugInputScreenState extends ConsumerState<DrugInputScreen> {
         return;
       }
 
+      debugPrint('OCR text sent to /analyze:\n$text');
       final apiClient = ref.read(apiClientProvider);
       final result = await apiClient.analyze(text);
 
