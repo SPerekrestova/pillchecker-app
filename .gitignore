@@ -39,7 +39,6 @@ ios/Runner/GeneratedPluginRegistrant.*
 # Pub
 .pub-cache/
 .pub/
-pubspec.lock
 
 # Generated
 *.g.dart
