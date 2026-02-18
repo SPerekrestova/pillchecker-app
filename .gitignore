@@ -1,45 +1,9 @@
-# Flutter/Dart
-.dart_tool/
-.packages
-build/
-.flutter-plugins
-.flutter-plugins-dependencies
-.metadata
-*.iml
-
-# IDE
-.idea/
-.vscode/
-*.swp
-*.swo
+node_modules/
+dist/
+.env
+.env.local
+*.log
+.DS_Store
 
 # Claude Code
 .claude/
-
-# macOS
-.DS_Store
-**/.DS_Store
-
-# Logs
-*.log
-
-# iOS
-ios/Pods/
-ios/.symlinks/
-ios/Flutter/Flutter.framework
-ios/Flutter/Flutter.podspec
-ios/Flutter/Generated.xcconfig
-ios/Flutter/app.flx
-ios/Flutter/app.zip
-ios/Flutter/engine/
-ios/Flutter/flutter_export_environment.sh
-ios/ServiceDefinitions.json
-ios/Runner/GeneratedPluginRegistrant.*
-
-# Pub
-.pub-cache/
-.pub/
-
-# Generated
-*.g.dart
-*.freezed.dart
