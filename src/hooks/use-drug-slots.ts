@@ -29,6 +29,7 @@ function persistSlots(slots: [DrugSlot, DrugSlot]) {
 
 export function useDrugSlots() {
   const [slots, setSlots] = useState<[DrugSlot, DrugSlot]>(loadSlots);
+  const [hasScanned, setHasScanned] = useState(false);
 
   const update = useCallback((updater: (prev: [DrugSlot, DrugSlot]) => [DrugSlot, DrugSlot]) => {
     setSlots((prev) => {
@@ -39,6 +40,7 @@ export function useDrugSlots() {
   }, []);
 
   const setDrug = useCallback((index: number, drug: DrugResult) => {
+    setHasScanned(true);
     update((prev) => {
       const next: [DrugSlot, DrugSlot] = [...prev] as [DrugSlot, DrugSlot];
       next[index] = { drug, manualName: null };
@@ -65,6 +67,7 @@ export function useDrugSlots() {
   const reset = useCallback(() => {
     const empty: [DrugSlot, DrugSlot] = [emptySlot(), emptySlot()];
     setSlots(empty);
+    setHasScanned(false);
     sessionStorage.removeItem(STORAGE_KEY);
   }, []);
 
@@ -75,5 +78,5 @@ export function useDrugSlots() {
     [slots]
   );
 
-  return { slots, setDrug, setManualName, clearSlot, reset, bothFilled, drugNames };
+  return { slots, setDrug, setManualName, clearSlot, reset, bothFilled, drugNames, hasScanned };
 }

@@ -3,6 +3,14 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
 import { InteractionCard } from "@/components/InteractionCard";
 import { SafeResult } from "@/components/SafeResult";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -14,6 +22,7 @@ const CheckDetail = () => {
   const navigate = useNavigate();
   const { id } = useParams<{ id: string }>();
   const [record, setRecord] = useState<CheckRecord | null | undefined>(undefined);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   useEffect(() => {
     if (id) {
@@ -72,7 +81,7 @@ const CheckDetail = () => {
               <ArrowLeft className="h-6 w-6" />
             </button>
           </div>
-          <button onClick={handleDelete} className="text-destructive">
+          <button onClick={() => setConfirmOpen(true)} className="text-destructive">
             <Trash2 className="h-5 w-5" />
           </button>
         </div>
@@ -123,11 +132,30 @@ const CheckDetail = () => {
         <Button
           variant="outline"
           className="w-full mt-8 h-12 text-destructive border-destructive hover:bg-destructive/10"
-          onClick={handleDelete}
+          onClick={() => setConfirmOpen(true)}
         >
           Delete from History
         </Button>
       </main>
+
+      <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete this check?</DialogTitle>
+            <DialogDescription>
+              This will permanently remove the record from your history. This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setConfirmOpen(false)}>
+              Cancel
+            </Button>
+            <Button variant="destructive" onClick={handleDelete}>
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

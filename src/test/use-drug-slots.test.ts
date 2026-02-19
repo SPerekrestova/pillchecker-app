@@ -69,4 +69,37 @@ describe("useDrugSlots", () => {
     const stored = JSON.parse(sessionStorage.getItem("drugSlots")!);
     expect(stored[0].manualName).toBe("Aspirin");
   });
+
+  it("hasScanned is false initially", () => {
+    const { result } = renderHook(() => useDrugSlots());
+    expect(result.current.hasScanned).toBe(false);
+  });
+
+  it("hasScanned is true after setDrug is called", () => {
+    const { result } = renderHook(() => useDrugSlots());
+    const fakeDrug = { name: "Aspirin", rxcui: "1191", dosage: null, form: null };
+
+    act(() => result.current.setDrug(0, fakeDrug));
+
+    expect(result.current.hasScanned).toBe(true);
+  });
+
+  it("hasScanned remains false when only setManualName is used", () => {
+    const { result } = renderHook(() => useDrugSlots());
+
+    act(() => result.current.setManualName(0, "Aspirin"));
+    act(() => result.current.setManualName(1, "Ibuprofen"));
+
+    expect(result.current.hasScanned).toBe(false);
+  });
+
+  it("hasScanned resets to false after reset()", () => {
+    const { result } = renderHook(() => useDrugSlots());
+    const fakeDrug = { name: "Aspirin", rxcui: "1191", dosage: null, form: null };
+
+    act(() => result.current.setDrug(0, fakeDrug));
+    act(() => result.current.reset());
+
+    expect(result.current.hasScanned).toBe(false);
+  });
 });

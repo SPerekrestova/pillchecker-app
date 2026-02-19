@@ -74,6 +74,7 @@ const ScanMedicine = () => {
   };
 
   const handleRetake = () => {
+    if (preview) URL.revokeObjectURL(preview);
     setStage("idle");
     setPreview(null);
     setDrug(null);

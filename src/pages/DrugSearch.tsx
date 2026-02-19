@@ -20,17 +20,19 @@ const DrugSearch = () => {
     inputRef.current?.focus();
   }, []);
 
+  // Suggestions are only shown when the query is long enough
+  const displaySuggestions = query.trim().length >= 2 ? suggestions : [];
+
   // Debounced search
   useEffect(() => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
 
     if (query.trim().length < 2) {
-      setSuggestions([]);
       return;
     }
 
-    setLoading(true);
     debounceRef.current = setTimeout(async () => {
+      setLoading(true);
       const results = await suggest(query);
       setSuggestions(results);
       setLoading(false);
@@ -83,9 +85,9 @@ const DrugSearch = () => {
           </div>
         )}
 
-        {suggestions.length > 0 && (
+        {displaySuggestions.length > 0 && (
           <div className="mt-4 rounded-lg border bg-background overflow-hidden">
-            {suggestions.map((name) => (
+            {displaySuggestions.map((name) => (
               <button
                 key={name}
                 onClick={() => selectDrug(name)}
@@ -97,7 +99,7 @@ const DrugSearch = () => {
           </div>
         )}
 
-        {!loading && query.trim().length >= 2 && suggestions.length === 0 && (
+        {!loading && query.trim().length >= 2 && displaySuggestions.length === 0 && (
           <p className="text-sm text-muted-foreground mt-4">
             No suggestions found. Press Enter to use &quot;{query}&quot; as-is.
           </p>

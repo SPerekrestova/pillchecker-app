@@ -12,7 +12,7 @@ import { toast } from "sonner";
 const DrugInput = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { slots, setDrug, setManualName, clearSlot, bothFilled, drugNames } = useDrugSlots();
+  const { slots, setDrug, setManualName, clearSlot, bothFilled, drugNames, hasScanned } = useDrugSlots();
   const [loading, setLoading] = useState(false);
 
   // Merge incoming state from ScanMedicine or DrugSearch
@@ -36,7 +36,7 @@ const DrugInput = () => {
     try {
       const result = await checkInteractions(drugNames);
       navigate("/results", {
-        state: { result, drugNames, source: "manual" },
+        state: { result, drugNames, source: hasScanned ? "scan" : "manual" },
         replace: true,
       });
     } catch (error) {
