@@ -2,7 +2,7 @@ import { test as base, expect } from "@playwright/test";
 
 export const test = base.extend<{ ensureTunnel: void }>({
   ensureTunnel: [
-    async ({}, use) => {
+    async (_fixtures, use) => {
       const API = "http://localhost:8000";
       try {
         const health = await fetch(`${API}/health`);
