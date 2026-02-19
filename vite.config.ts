@@ -16,6 +16,7 @@ export default defineConfig({
   test: {
     environment: "jsdom",
     setupFiles: [],
+    exclude: ["tests/e2e/**", "node_modules/**"],
     alias: {
       "@/": new URL("./src/", import.meta.url).pathname,
     },
