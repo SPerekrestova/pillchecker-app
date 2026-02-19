@@ -1,13 +1,13 @@
 import { test as base, expect } from "@playwright/test";
 
-export const test = base.extend<{ ensureTunnel: void }>({
+export const test = base.extend<{ ensureTunnel: undefined }>({
   ensureTunnel: [
-    async (_fixtures, use) => {
+    async ({}, use) => {
       const API = "http://localhost:8000";
       try {
-        const health = await fetch(`${API}/health`);
+        const health = await fetch(`${API}/health`, { method: "GET" });
         expect(health.ok).toBe(true);
-        const dataHealth = await fetch(`${API}/health/data`);
+        const dataHealth = await fetch(`${API}/health/data`, { method: "GET" });
         expect(dataHealth.ok).toBe(true);
       } catch {
         throw new Error(
@@ -16,9 +16,9 @@ export const test = base.extend<{ ensureTunnel: void }>({
             "  ssh -L 8000:localhost:8000 pillchecker"
         );
       }
-      await use();
+      await use(undefined);
     },
-    { auto: true, scope: "worker" },
+    { auto: true },
   ],
 });
 
