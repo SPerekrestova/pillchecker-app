@@ -70,12 +70,37 @@ test.describe("Manual Entry Flow", () => {
   });
 
   test("M3: RxNorm autocomplete appears", async ({ page }) => {
+    // Mock RxNorm API for reliable results (external API can be slow/empty)
+    await page.route("**/rxnav.nlm.nih.gov/**", (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          approximateGroup: {
+            candidate: [
+              { rxcui: "5640", rxaui: "1", score: "100" },
+            ],
+          },
+        }),
+      })
+    );
+    // Also mock the rxcui properties lookup
+    await page.route("**/rxcui/5640/properties.json", (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({
+          properties: { rxcui: "5640", name: "ibuprofen" },
+        }),
+      })
+    );
+
     await page.locator("button:has(.lucide-plus)").click();
     await page.getByRole("button", { name: /Scan Medicine/i }).click();
     await page.locator("button", { hasText: "Type" }).first().click();
 
     await page.getByPlaceholder("Type drug name...").fill("ibup");
-    // Wait for debounce + API call
+    // Wait for debounce + mocked API call
     await expect(
       page.locator("button", { hasText: /ibuprofen/i }).first()
     ).toBeVisible({ timeout: 10_000 });

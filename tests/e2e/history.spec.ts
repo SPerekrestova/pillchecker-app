@@ -104,8 +104,8 @@ test.describe("History & CheckDetail", () => {
     await page.getByText(/ibuprofen \+ warfarin/i).click();
 
     // CheckDetail page
-    await expect(page.getByText("ibuprofen + warfarin")).toBeVisible();
-    await expect(page.getByText("Unsafe")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "ibuprofen + warfarin" })).toBeVisible();
+    await expect(page.getByText("Unsafe").first()).toBeVisible();
     await expect(page.getByText("Manual")).toBeVisible();
     await expect(page.getByText("MAJOR")).toBeVisible();
   });
@@ -137,7 +137,7 @@ test.describe("History & CheckDetail", () => {
 
   test("H11: detail not found", async ({ page }) => {
     await page.goto("/history/nonexistent-uuid-12345");
-    await expect(page.getByText("Not Found")).toBeVisible();
-    await expect(page.getByText("Check not found")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Not Found" })).toBeVisible();
+    await expect(page.getByText("Check not found.")).toBeVisible();
   });
 });

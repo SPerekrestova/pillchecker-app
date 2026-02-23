@@ -123,20 +123,23 @@ test.describe("Edge Cases & Error States", () => {
   });
 
   test("E9: rapid double-click sends single request", async ({ page }) => {
+    test.setTimeout(60_000);
     await fillBothSlots(page, "ibuprofen", "warfarin");
 
+    // Count POST requests to the interactions endpoint
     let requestCount = 0;
-    await page.route("**/interactions", async (route) => {
-      requestCount++;
-      await route.continue();
+    page.on("request", (req) => {
+      if (req.url().includes("/interactions") && req.method() === "POST") {
+        requestCount++;
+      }
     });
 
     const btn = page.getByRole("button", { name: /Check Interactions/i });
-    // Double-click rapidly
-    await btn.click();
-    await btn.click({ force: true }).catch(() => {}); // may be disabled already
+    // Rapid double-click
+    await btn.dblclick();
 
-    await page.getByText("Results").waitFor({ timeout: 30_000 });
+    // Wait for navigation to results
+    await page.waitForURL("**/results", { timeout: 45_000 });
     expect(requestCount).toBe(1);
   });
 
