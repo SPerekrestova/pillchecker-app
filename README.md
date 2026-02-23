@@ -2,7 +2,7 @@
 
 PillChecker helps users find out if two medications are safe to take at the same time. 
 
-![PillChecker Demo](https://github.com/user-attachments/assets/df3e207e-4bb0-462e-ae1c-c1b934114c01)
+<video src="https://github.com/user-attachments/assets/df3e207e-4bb0-462e-ae1c-c1b934114c01"></video>
 
 > **⚠️ MEDICAL DISCLAIMER**
 > 
