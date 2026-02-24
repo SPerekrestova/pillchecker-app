@@ -2,7 +2,11 @@
 
 PillChecker helps users find out if two medications are safe to take at the same time. 
 
+**Backend lives here** [Medication interaction checker API](https://github.com/SPerekrestova/pillchecker-api)
+
 <video src="https://github.com/user-attachments/assets/df3e207e-4bb0-462e-ae1c-c1b934114c01"></video>
+
+
 
 > **⚠️ MEDICAL DISCLAIMER**
 > 
@@ -18,9 +22,8 @@ To ensure a license-free and up-to-date knowledge base, the application uses an 
 
 1.  **Fetch**: A sync script downloads bulk JSON drug label partitions directly from the **OpenFDA** public domain repository.
 2.  **Parse**: The script extracts specific Structured Product Labeling (SPL) fields: `drug_interactions`, `contraindications`, and `warnings`.
-3.  **Store**: These structured text blocks are stored in a local **SQLite** database (`data/fda_interactions.db`) indexed by RxCUI and Drug Name.
+3.  **Store**: These structured text blocks are stored in a local **SQLite** database indexed by RxCUI and Drug Name.
 4.  **Runtime Inference**: During a check, the engine performs a keyword scan across sections. If a match is found in the `contraindications` section, it is categorized as **Major**; matches in `interactions` or `warnings` are categorized as **Moderate/Minor**.
-5.  **Automate**: The pipeline is triggered weekly via GitHub Actions and auto-bootstraps during the first deployment via a Docker entrypoint script.
 
 ## Drug Identification Pipeline
 
