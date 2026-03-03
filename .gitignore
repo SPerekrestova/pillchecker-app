@@ -1,18 +1,35 @@
-node_modules/
-dist/
-.env
-.env.local
-*.log
+# Xcode
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
+DerivedData/
+build/
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+*.moved-aside
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# Swift Package Manager
+.build/
+Packages/
+Package.resolved
+
+# macOS
 .DS_Store
+*.swp
+*~
 
 # Claude Code
 .claude/
 .idea/
 
+# Internal docs
+docs/plans/
+
 # Git worktrees
 .worktrees/
-
-# Playwright
-test-results/
-playwright-report/
-tests/e2e/fixtures/generated-images/
