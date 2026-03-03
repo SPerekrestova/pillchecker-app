@@ -1,0 +1,118 @@
+import XCTest
+@testable import PillChecker
+
+final class APIModelsTests: XCTestCase {
+
+    func testDrugResultDecodesFromJSON() throws {
+        let json = """
+        {
+            "rxcui": "5640",
+            "name": "Ibuprofen",
+            "dosage": "400 mg",
+            "form": "Tablet",
+            "source": "ner",
+            "confidence": 0.95
+        }
+        """.data(using: .utf8)!
+
+        let result = try JSONDecoder().decode(DrugResult.self, from: json)
+        XCTAssertEqual(result.rxcui, "5640")
+        XCTAssertEqual(result.name, "Ibuprofen")
+        XCTAssertEqual(result.dosage, "400 mg")
+        XCTAssertEqual(result.form, "Tablet")
+        XCTAssertEqual(result.source, "ner")
+        XCTAssertEqual(result.confidence, 0.95)
+    }
+
+    func testDrugResultDecodesNullFields() throws {
+        let json = """
+        {
+            "rxcui": null,
+            "name": "Aspirin",
+            "dosage": null,
+            "form": null,
+            "source": "rxnorm_fallback",
+            "confidence": 0.8
+        }
+        """.data(using: .utf8)!
+
+        let result = try JSONDecoder().decode(DrugResult.self, from: json)
+        XCTAssertNil(result.rxcui)
+        XCTAssertNil(result.dosage)
+        XCTAssertNil(result.form)
+    }
+
+    func testAnalyzeResponseDecodes() throws {
+        let json = """
+        {
+            "drugs": [
+                {
+                    "rxcui": "5640",
+                    "name": "Ibuprofen",
+                    "dosage": null,
+                    "form": null,
+                    "source": "ner",
+                    "confidence": 0.9
+                }
+            ],
+            "raw_text": "BRUFEN Ibuprofen 400mg"
+        }
+        """.data(using: .utf8)!
+
+        let response = try JSONDecoder().decode(AnalyzeResponse.self, from: json)
+        XCTAssertEqual(response.drugs.count, 1)
+        XCTAssertEqual(response.drugs[0].name, "Ibuprofen")
+        XCTAssertEqual(response.rawText, "BRUFEN Ibuprofen 400mg")
+    }
+
+    func testInteractionResultDecodes() throws {
+        let json = """
+        {
+            "drug_a": "Ibuprofen",
+            "drug_b": "Warfarin",
+            "severity": "MAJOR",
+            "description": "Increases bleeding risk",
+            "management": "Avoid combination"
+        }
+        """.data(using: .utf8)!
+
+        let result = try JSONDecoder().decode(InteractionResult.self, from: json)
+        XCTAssertEqual(result.drugA, "Ibuprofen")
+        XCTAssertEqual(result.drugB, "Warfarin")
+        XCTAssertEqual(result.severity, "MAJOR")
+    }
+
+    func testInteractionsResponseDecodes() throws {
+        let json = """
+        {
+            "interactions": [
+                {
+                    "drug_a": "Ibuprofen",
+                    "drug_b": "Warfarin",
+                    "severity": "MAJOR",
+                    "description": "Risk",
+                    "management": "Avoid"
+                }
+            ],
+            "safe": false
+        }
+        """.data(using: .utf8)!
+
+        let response = try JSONDecoder().decode(InteractionsResponse.self, from: json)
+        XCTAssertFalse(response.safe)
+        XCTAssertEqual(response.interactions.count, 1)
+    }
+
+    func testInteractionsResponseSafeDecodes() throws {
+        let json = """
+        {
+            "interactions": [],
+            "safe": true
+        }
+        """.data(using: .utf8)!
+
+        let response = try JSONDecoder().decode(InteractionsResponse.self, from: json)
+        XCTAssertTrue(response.safe)
+        XCTAssertTrue(response.interactions.isEmpty)
+    }
+}
