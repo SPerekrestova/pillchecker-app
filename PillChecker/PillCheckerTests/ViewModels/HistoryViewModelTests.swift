@@ -1,27 +1,50 @@
 import XCTest
-import SwiftData
 @testable import PillChecker
 
+@MainActor
 final class HistoryViewModelTests: XCTestCase {
 
-    func testSortOrderOptions() {
+    func testSortOptionCount() {
         XCTAssertEqual(SortOption.allCases.count, 3)
     }
 
-    func testFilteredChecksMatchesQuery() {
+    func testFilteredByQuery() {
+        let vm = HistoryViewModel()
+        vm.searchQuery = "ibu"
+
         let checks = [
             makeRecord(drugA: "Ibuprofen", drugB: "Warfarin"),
             makeRecord(drugA: "Aspirin", drugB: "Lisinopril"),
         ]
 
-        let filtered = checks.filter { record in
-            let query = "ibu"
-            return record.drugA.localizedCaseInsensitiveContains(query) ||
-                   record.drugB.localizedCaseInsensitiveContains(query)
-        }
-
+        let filtered = vm.filtered(checks)
         XCTAssertEqual(filtered.count, 1)
         XCTAssertEqual(filtered[0].drugA, "Ibuprofen")
+    }
+
+    func testEmptyQueryReturnsAll() {
+        let vm = HistoryViewModel()
+
+        let checks = [
+            makeRecord(drugA: "Ibuprofen", drugB: "Warfarin"),
+            makeRecord(drugA: "Aspirin", drugB: "Lisinopril"),
+        ]
+
+        let filtered = vm.filtered(checks)
+        XCTAssertEqual(filtered.count, 2)
+    }
+
+    func testSortByDrugA() {
+        let vm = HistoryViewModel()
+        vm.sortOption = .drugA
+
+        let checks = [
+            makeRecord(drugA: "Warfarin", drugB: "X"),
+            makeRecord(drugA: "Aspirin", drugB: "Y"),
+        ]
+
+        let sorted = vm.filtered(checks)
+        XCTAssertEqual(sorted[0].drugA, "Aspirin")
     }
 
     private func makeRecord(drugA: String, drugB: String) -> CheckRecord {

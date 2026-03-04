@@ -10,6 +10,7 @@ enum SortOption: String, CaseIterable, Identifiable {
 }
 
 @Observable
+@MainActor
 final class HistoryViewModel {
     var searchQuery = ""
     var sortOption: SortOption = .newest

@@ -1,11 +1,8 @@
-import UIKit
 import Vision
 
 final class OCRService: Sendable {
 
-    func recognizeText(from image: UIImage) async throws -> String? {
-        guard let cgImage = image.cgImage else { return nil }
-
+    func recognizeText(from cgImage: CGImage) async throws -> String? {
         return try await withCheckedThrowingContinuation { continuation in
             let request = VNRecognizeTextRequest { request, error in
                 if let error {

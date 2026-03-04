@@ -8,11 +8,12 @@
 import SwiftUI
 
 struct ContentView: View {
-    @State private var path = NavigationPath()
+    @Environment(AppNavigator.self) private var navigator
 
     var body: some View {
-        NavigationStack(path: $path) {
-            HistoryView(path: $path)
+        @Bindable var nav = navigator
+        NavigationStack(path: $nav.path) {
+            HistoryView()
                 .navigationDestination(for: Route.self) { route in
                     switch route {
                     case .drugInput:

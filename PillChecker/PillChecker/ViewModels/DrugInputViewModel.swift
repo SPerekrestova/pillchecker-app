@@ -1,9 +1,13 @@
 import Foundation
 
 @Observable
+@MainActor
 final class DrugInputViewModel {
     var slots: [DrugSlot] = [DrugSlot(), DrugSlot()]
-    var hasScanned = false
+
+    var hasScanned: Bool {
+        slots.contains { $0.isScanned }
+    }
 
     var bothFilled: Bool {
         slots[0].isFilled && slots[1].isFilled
@@ -17,7 +21,6 @@ final class DrugInputViewModel {
         slots[index].drug = drug
         slots[index].manualName = nil
         slots[index].isScanned = true
-        hasScanned = true
     }
 
     func setManualName(index: Int, name: String) {
@@ -32,6 +35,5 @@ final class DrugInputViewModel {
 
     func reset() {
         slots = [DrugSlot(), DrugSlot()]
-        hasScanned = false
     }
 }

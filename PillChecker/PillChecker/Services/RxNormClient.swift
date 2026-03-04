@@ -30,15 +30,13 @@ final class RxNormClient: Sendable {
                 }
             }
 
-            let names = await withTaskGroup(of: String?.self) { group in
-                for rxcui in rxcuis {
-                    group.addTask { await self.resolveName(rxcui: rxcui) }
+            let names = await withTaskGroup(of: (Int, String?).self) { group in
+                for (i, rxcui) in rxcuis.enumerated() {
+                    group.addTask { (i, await self.resolveName(rxcui: rxcui)) }
                 }
-                var results: [String] = []
-                for await name in group {
-                    if let name { results.append(name) }
-                }
-                return results
+                var ordered = [String?](repeating: nil, count: rxcuis.count)
+                for await (i, name) in group { ordered[i] = name }
+                return ordered.compactMap { $0 }
             }
 
             return names

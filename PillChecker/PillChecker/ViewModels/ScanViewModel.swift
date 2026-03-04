@@ -21,11 +21,15 @@ final class ScanViewModel {
 
     func processImage(_ image: UIImage) async {
         capturedImage = image
+        guard let cgImage = image.cgImage else {
+            error = "Could not process image."
+            return
+        }
         isProcessing = true
         error = nil
 
         do {
-            let text = try await ocrService.recognizeText(from: image)
+            let text = try await ocrService.recognizeText(from: cgImage)
             recognizedText = text
 
             guard let text, !text.isEmpty else {

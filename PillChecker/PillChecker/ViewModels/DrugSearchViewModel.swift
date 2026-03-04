@@ -28,11 +28,12 @@ final class DrugSearchViewModel {
             guard !Task.isCancelled else { return }
 
             isSearching = true
+            defer { isSearching = false }
+
             let results = await rxNormClient.suggest(query: currentQuery)
             guard !Task.isCancelled else { return }
 
             suggestions = results
-            isSearching = false
         }
     }
 }

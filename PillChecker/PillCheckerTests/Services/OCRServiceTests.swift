@@ -20,7 +20,7 @@ final class OCRServiceTests: XCTestCase {
             text.draw(at: CGPoint(x: 20, y: 30), withAttributes: attrs)
         }
 
-        let result = try await service.recognizeText(from: image)
+        let result = try await service.recognizeText(from: image.cgImage!)
         XCTAssertNotNil(result)
         let lowered = result?.lowercased() ?? ""
         XCTAssertTrue(lowered.contains("ibuprofen") || lowered.contains("400"),
@@ -34,7 +34,7 @@ final class OCRServiceTests: XCTestCase {
             context.fill(CGRect(x: 0, y: 0, width: 100, height: 100))
         }
 
-        let result = try await service.recognizeText(from: image)
+        let result = try await service.recognizeText(from: image.cgImage!)
         XCTAssertTrue(result == nil || result?.isEmpty == true)
     }
 }
