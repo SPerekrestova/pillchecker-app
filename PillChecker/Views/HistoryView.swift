@@ -56,6 +56,8 @@ struct HistoryView: View {
                             .background(Color.accentColor, in: Circle())
                             .shadow(radius: 4)
                     }
+                    .accessibilityIdentifier("newCheckButton")
+                    .accessibilityLabel("New Check")
                 }
             }
         }
