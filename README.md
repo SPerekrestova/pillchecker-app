@@ -1,54 +1,74 @@
-# PillChecker Web App
+# PillChecker iOS
 
-PillChecker helps users find out if two medications are safe to take at the same time. 
+A native iOS app that checks drug-drug interactions by scanning or searching for two medications.
 
-**Backend lives here** [Medication interaction checker API](https://github.com/SPerekrestova/pillchecker-api)
+**Backend API:** [pillchecker-api](https://github.com/SPerekrestova/pillchecker-api)
 
-<video src="https://github.com/user-attachments/assets/df3e207e-4bb0-462e-ae1c-c1b934114c01"></video>
+## Requirements
 
+- Xcode 16+
+- iOS 17+
+- A running instance of the [backend API](https://github.com/SPerekrestova/pillchecker-api)
 
+## Setup
+
+```bash
+git clone https://github.com/SPerekrestova/pillchecker-app.git
+cd pillchecker-app
+open PillChecker.xcodeproj
+```
+
+Set `API_BASE_URL` in Xcode → Product → Scheme → Edit Scheme → Environment Variables (or override the build setting in `project.pbxproj`). Default is `http://localhost:8000`.
+
+Run on simulator or device with **Cmd+R**.
+
+## Architecture
+
+| Layer | Technology |
+|-------|-----------|
+| UI | SwiftUI + `NavigationStack` |
+| State | `@Observable` ViewModels |
+| Navigation | `AppNavigator` environment object + typed `Route` enum |
+| Persistence | SwiftData (`CheckRecord`) |
+| OCR | Apple Vision (`VNRecognizeTextRequest`) |
+| Drug search | RxNorm REST API |
+| Interaction check | Custom backend API |
+
+### Project structure
+
+```
+PillChecker/            ← app sources
+  Models/               ← data types (DrugResult, CheckRecord, …)
+  Services/             ← APIClient, RxNormClient, OCRService
+  ViewModels/           ← @Observable view models
+  Views/                ← SwiftUI screens and components
+  Navigation/           ← AppNavigator, Route
+  Utilities/            ← AppConfig
+PillCheckerTests/       ← unit tests
+PillCheckerUITests/     ← UI tests
+```
+
+## Running Tests
+
+```bash
+xcodebuild test \
+  -project PillChecker.xcodeproj \
+  -scheme PillCheckerTests \
+  -destination 'platform=iOS Simulator,name=iPhone 17'
+```
+
+Or press **Cmd+U** in Xcode.
+
+## Data Sources
+
+- **RxNorm REST API** — drug name normalization and autocomplete (National Library of Medicine)
+- **OpenFDA** — drug interaction data via the backend API (US Public Domain)
+- **OpenMed NER PharmaDetect** — drug entity recognition model used by the backend
+
+## Medical Disclaimer
 
 > **⚠️ MEDICAL DISCLAIMER**
-> 
-> This service is provided for **informational and self-educational purposes only**. While the application utilizes data from respected sources such as the FDA and RxNorm, the information provided should **not** be treated as medical advice, diagnosis, or treatment.
-> 
-> The developer of this project **does not have any medical qualifications**. This tool was built as a technical exercise to explore NLP and medical data integration.
-> 
-> **Always consult with a qualified healthcare professional** (such as a doctor or pharmacist) before making any decisions regarding your medications or health. The developer assumes **no responsibility or liability** for any errors, omissions, or consequences arising from the use of the information provided by this service.
-
-## Data Pipeline
-
-To ensure a license-free and up-to-date knowledge base, the application uses an automated pipeline:
-
-1.  **Fetch**: A sync script downloads bulk JSON drug label partitions directly from the **OpenFDA** public domain repository.
-2.  **Parse**: The script extracts specific Structured Product Labeling (SPL) fields: `drug_interactions`, `contraindications`, and `warnings`.
-3.  **Store**: These structured text blocks are stored in a local **SQLite** database indexed by RxCUI and Drug Name.
-4.  **Runtime Inference**: During a check, the engine performs a keyword scan across sections. If a match is found in the `contraindications` section, it is categorized as **Major**; matches in `interactions` or `warnings` are categorized as **Moderate/Minor**.
-
-## Drug Identification Pipeline
-
-The API uses a two-pass identification strategy to convert unstructured OCR text into standardized medical data:
-
-1.  **Pass 1 (NER)**: Uses the **[OpenMed-NER-PharmaDetect](https://huggingface.co/OpenMed/OpenMed-NER-PharmaDetect-ModernClinical-149M)** model (a 149M parameter transformer) from Hugging Face to extract chemical entities (e.g., "Ibuprofen") from noisy text.
-2.  **Pass 2 (Fallback)**: If NER fails to find a drug, the system performs an approximate term search using the **RxNorm REST API** on major text blocks to identify brand names (e.g., "Advil").
-3.  **Enrichment**: A **Regex-based parser** extracts dosages (e.g., "400mg") and strengths, while the **RxNorm API** links all identified drugs to their **RxCUI** for accurate interaction checking.
-
-## Acknowledgments
-
-This project relies on several high-quality external data sources and models:
-
-- **OpenMed NER PharmaDetect (ModernClinical-149M)**: State-of-the-art medical entity recognition model used for identifying drug names in text.
-  - [Model Link](https://huggingface.co/OpenMed/OpenMed-NER-PharmaDetect-ModernClinical-149M)
-  - **License**: Apache 2.0
-
-- **RxNorm REST API**: Provided by the National Library of Medicine (NLM), used for drug name normalization and RxCUI mapping.
-  - [API Documentation](https://lhncbc.nlm.nih.gov/RxNav/APIs/RxNormAPIs.html)
-  - **License**: Free to use (refer to NLM Terms of Service)
-
-- **OpenFDA**: Primary source for Drug-Drug Interaction (DDI) data, sourced directly from Structured Product Labeling (SPL).
-  - [OpenFDA Website](https://open.fda.gov/)
-  - **License**: **Public Domain** (US Government)
-
-- **Hugging Face Transformers**: Library used to run the NER model and NLP pipeline.
-  - [Documentation](https://huggingface.co/docs/transformers/index)
-  - **License**: Apache 2.0
+>
+> This app is provided for **informational and self-educational purposes only**. The information provided should **not** be treated as medical advice, diagnosis, or treatment.
+>
+> **Always consult with a qualified healthcare professional** before making any decisions regarding your medications. The developer assumes **no responsibility** for any consequences arising from use of this app.
