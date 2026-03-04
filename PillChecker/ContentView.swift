@@ -9,6 +9,11 @@ import SwiftUI
 
 struct ContentView: View {
     @Environment(AppNavigator.self) private var navigator
+    @State private var drugInputViewModel = DrugInputViewModel()
+
+    private let apiClient = APIClient(baseURL: AppConfig.apiBaseURL)
+    private let ocrService = OCRService()
+    private let rxNormClient = RxNormClient()
 
     var body: some View {
         @Bindable var nav = navigator
@@ -17,17 +22,38 @@ struct ContentView: View {
                 .navigationDestination(for: Route.self) { route in
                     switch route {
                     case .drugInput:
-                        Text("Drug Input — Coming Soon")
+                        DrugInputView(viewModel: drugInputViewModel)
+
                     case .scan(let slot):
-                        Text("Scan Slot \(slot) — Coming Soon")
+                        ScanMedicineView(
+                            slot: slot,
+                            drugInputViewModel: drugInputViewModel,
+                            apiClient: apiClient,
+                            ocrService: ocrService
+                        )
+
                     case .search(let slot):
-                        Text("Search Slot \(slot) — Coming Soon")
+                        DrugSearchView(
+                            slot: slot,
+                            drugInputViewModel: drugInputViewModel,
+                            rxNormClient: rxNormClient
+                        )
+
                     case .results(let drugA, let drugB):
-                        Text("Results: \(drugA) + \(drugB) — Coming Soon")
+                        ResultsView(
+                            drugA: drugA,
+                            drugB: drugB,
+                            source: drugInputViewModel.hasScanned ? "scan" : "manual",
+                            apiClient: apiClient
+                        )
+
                     case .checkDetail(let id):
-                        Text("Detail \(id) — Coming Soon")
+                        CheckDetailView(recordID: id)
                     }
                 }
+        }
+        .onChange(of: navigator.path.isEmpty) { _, isEmpty in
+            if isEmpty { drugInputViewModel.reset() }
         }
     }
 }
