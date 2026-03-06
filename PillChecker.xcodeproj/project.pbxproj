@@ -14,19 +14,11 @@
 			remoteGlobalIDString = DA7F29AC2F5781B200E9249B;
 			remoteInfo = PillChecker;
 		};
-		DA7F29C72F5781B400E9249B /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DA7F29A52F5781B200E9249B /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = DA7F29AC2F5781B200E9249B;
-			remoteInfo = PillChecker;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		DA7F29AD2F5781B200E9249B /* PillChecker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PillChecker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DA7F29BC2F5781B400E9249B /* PillCheckerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PillCheckerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		DA7F29C62F5781B400E9249B /* PillCheckerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PillCheckerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -38,11 +30,6 @@
 		DA7F29BF2F5781B400E9249B /* PillCheckerTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = PillCheckerTests;
-			sourceTree = "<group>";
-		};
-		DA7F29C92F5781B400E9249B /* PillCheckerUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = PillCheckerUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -62,13 +49,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		DA7F29C32F5781B400E9249B /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -77,7 +57,6 @@
 			children = (
 				DA7F29AF2F5781B200E9249B /* PillChecker */,
 				DA7F29BF2F5781B400E9249B /* PillCheckerTests */,
-				DA7F29C92F5781B400E9249B /* PillCheckerUITests */,
 				DA7F29AE2F5781B200E9249B /* Products */,
 			);
 			sourceTree = "<group>";
@@ -87,8 +66,7 @@
 			children = (
 				DA7F29AD2F5781B200E9249B /* PillChecker.app */,
 				DA7F29BC2F5781B400E9249B /* PillCheckerTests.xctest */,
-				DA7F29C62F5781B400E9249B /* PillCheckerUITests.xctest */,
-			);
+				);
 			name = Products;
 			sourceTree = "<group>";
 		};
@@ -140,29 +118,6 @@
 			productReference = DA7F29BC2F5781B400E9249B /* PillCheckerTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		DA7F29C52F5781B400E9249B /* PillCheckerUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = DA7F29D62F5781B400E9249B /* Build configuration list for PBXNativeTarget "PillCheckerUITests" */;
-			buildPhases = (
-				DA7F29C22F5781B400E9249B /* Sources */,
-				DA7F29C32F5781B400E9249B /* Frameworks */,
-				DA7F29C42F5781B400E9249B /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				DA7F29C82F5781B400E9249B /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				DA7F29C92F5781B400E9249B /* PillCheckerUITests */,
-			);
-			name = PillCheckerUITests;
-			packageProductDependencies = (
-			);
-			productName = PillCheckerUITests;
-			productReference = DA7F29C62F5781B400E9249B /* PillCheckerUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -177,10 +132,6 @@
 						CreatedOnToolsVersion = 26.3;
 					};
 					DA7F29BB2F5781B400E9249B = {
-						CreatedOnToolsVersion = 26.3;
-						TestTargetID = DA7F29AC2F5781B200E9249B;
-					};
-					DA7F29C52F5781B400E9249B = {
 						CreatedOnToolsVersion = 26.3;
 						TestTargetID = DA7F29AC2F5781B200E9249B;
 					};
@@ -202,7 +153,6 @@
 			targets = (
 				DA7F29AC2F5781B200E9249B /* PillChecker */,
 				DA7F29BB2F5781B400E9249B /* PillCheckerTests */,
-				DA7F29C52F5781B400E9249B /* PillCheckerUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -216,13 +166,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		DA7F29BA2F5781B400E9249B /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		DA7F29C42F5781B400E9249B /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -246,13 +189,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		DA7F29C22F5781B400E9249B /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -260,11 +196,6 @@
 			isa = PBXTargetDependency;
 			target = DA7F29AC2F5781B200E9249B /* PillChecker */;
 			targetProxy = DA7F29BD2F5781B400E9249B /* PBXContainerItemProxy */;
-		};
-		DA7F29C82F5781B400E9249B /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = DA7F29AC2F5781B200E9249B /* PillChecker */;
-			targetProxy = DA7F29C72F5781B400E9249B /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -500,46 +431,6 @@
 			};
 			name = Release;
 		};
-		DA7F29D72F5781B400E9249B /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = F6QHU754W3;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.PillCheckerUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRING_CATALOG_GENERATE_SYMBOLS = NO;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = PillChecker;
-			};
-			name = Debug;
-		};
-		DA7F29D82F5781B400E9249B /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = F6QHU754W3;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.PillCheckerUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRING_CATALOG_GENERATE_SYMBOLS = NO;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
-				SWIFT_VERSION = 6.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = PillChecker;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -566,15 +457,6 @@
 			buildConfigurations = (
 				DA7F29D42F5781B400E9249B /* Debug */,
 				DA7F29D52F5781B400E9249B /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		DA7F29D62F5781B400E9249B /* Build configuration list for PBXNativeTarget "PillCheckerUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				DA7F29D72F5781B400E9249B /* Debug */,
-				DA7F29D82F5781B400E9249B /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

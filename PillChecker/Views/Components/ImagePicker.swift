@@ -10,6 +10,8 @@ struct ImagePicker: UIViewControllerRepresentable {
         let picker = UIImagePickerController()
         picker.sourceType = sourceType
         picker.delegate = context.coordinator
+        picker.allowsEditing = false
+        picker.modalPresentationStyle = .fullScreen
         return picker
     }
 
