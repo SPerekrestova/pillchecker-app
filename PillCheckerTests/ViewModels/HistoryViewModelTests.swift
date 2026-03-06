@@ -47,6 +47,64 @@ final class HistoryViewModelTests: XCTestCase {
         XCTAssertEqual(sorted[0].drugA, "Aspirin")
     }
 
+    func testSortByNewest() {
+        let vm = HistoryViewModel()
+        vm.sortOption = .newest
+
+        let older = makeRecord(drugA: "Aspirin", drugB: "X")
+        // Ensure different timestamps
+        let newer = CheckRecord(drugA: "Warfarin", drugB: "Y", safe: true, interactions: [], source: "manual")
+
+        let sorted = vm.filtered([older, newer])
+        // Newer record should come first (default sort is newest)
+        XCTAssertEqual(sorted[0].drugA, "Warfarin")
+    }
+
+    func testSortByDrugB() {
+        let vm = HistoryViewModel()
+        vm.sortOption = .drugB
+
+        let checks = [
+            makeRecord(drugA: "X", drugB: "Warfarin"),
+            makeRecord(drugA: "Y", drugB: "Aspirin"),
+        ]
+
+        let sorted = vm.filtered(checks)
+        XCTAssertEqual(sorted[0].drugB, "Aspirin")
+        XCTAssertEqual(sorted[1].drugB, "Warfarin")
+    }
+
+    func testFilterAndSortCombined() {
+        let vm = HistoryViewModel()
+        vm.searchQuery = "aspirin"
+        vm.sortOption = .drugA
+
+        let checks = [
+            makeRecord(drugA: "Warfarin", drugB: "Aspirin"),
+            makeRecord(drugA: "Aspirin", drugB: "Ibuprofen"),
+            makeRecord(drugA: "Lisinopril", drugB: "Metformin"),
+        ]
+
+        let result = vm.filtered(checks)
+        XCTAssertEqual(result.count, 2)
+        XCTAssertEqual(result[0].drugA, "Aspirin")
+        XCTAssertEqual(result[1].drugA, "Warfarin")
+    }
+
+    func testFilterMatchesDrugB() {
+        let vm = HistoryViewModel()
+        vm.searchQuery = "warfarin"
+
+        let checks = [
+            makeRecord(drugA: "Aspirin", drugB: "Warfarin"),
+            makeRecord(drugA: "Lisinopril", drugB: "Metformin"),
+        ]
+
+        let result = vm.filtered(checks)
+        XCTAssertEqual(result.count, 1)
+        XCTAssertEqual(result[0].drugB, "Warfarin")
+    }
+
     private func makeRecord(drugA: String, drugB: String) -> CheckRecord {
         CheckRecord(drugA: drugA, drugB: drugB, safe: true, interactions: [], source: "manual")
     }
