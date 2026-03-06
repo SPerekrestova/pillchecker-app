@@ -52,8 +52,8 @@ struct ContentView: View {
                     }
                 }
         }
-        .onChange(of: navigator.path.isEmpty) { _, isEmpty in
-            if isEmpty { drugInputViewModel.reset() }
+        .onChange(of: navigator.path.isEmpty) { oldValue, newValue in
+            if newValue { drugInputViewModel.reset() }
         }
     }
 }

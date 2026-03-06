@@ -43,22 +43,14 @@ struct HistoryView: View {
                 }
             }
 
-            ToolbarItem(placement: .bottomBar) {
-                HStack {
-                    Spacer()
-                    Button {
-                        navigator.navigate(to: .drugInput)
-                    } label: {
-                        Image(systemName: "plus")
-                            .font(.title2.bold())
-                            .foregroundStyle(.white)
-                            .frame(width: 56, height: 56)
-                            .background(Color.accentColor, in: Circle())
-                            .shadow(radius: 4)
-                    }
-                    .accessibilityIdentifier("newCheckButton")
-                    .accessibilityLabel("New Check")
+            ToolbarItem(placement: .primaryAction) {
+                Button {
+                    navigator.navigate(to: .drugInput)
+                } label: {
+                    Image(systemName: "plus")
                 }
+                .accessibilityIdentifier("newCheckButton")
+                .accessibilityLabel("New Check")
             }
         }
     }

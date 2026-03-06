@@ -37,7 +37,7 @@ struct CheckDetailView: View {
                         if record.safe {
                             SafeResultView(drugA: record.drugA, drugB: record.drugB)
                         } else {
-                            ForEach(Array(record.interactions.enumerated()), id: \.offset) { _, interaction in
+                            ForEach(record.interactions, id: \.self) { interaction in
                                 InteractionCard(interaction: interaction)
                             }
                         }

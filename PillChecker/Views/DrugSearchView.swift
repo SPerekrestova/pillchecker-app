@@ -20,7 +20,7 @@ struct DrugSearchView: View {
                     .autocorrectionDisabled()
                     .textInputAutocapitalization(.never)
                     .onSubmit { selectCustom() }
-                    .onChange(of: viewModel.query) { _, _ in
+                    .onChange(of: viewModel.query) {
                         viewModel.search()
                     }
 

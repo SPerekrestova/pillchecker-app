@@ -43,4 +43,51 @@ final class DrugInputViewModelTests: XCTestCase {
         ))
         XCTAssertTrue(vm.hasScanned)
     }
+
+    func testSetDrugFillsSlotAndMarksScanned() {
+        let vm = DrugInputViewModel()
+        let drug = DrugResult(rxcui: "5640", name: "Ibuprofen", dosage: "400mg", form: "tablet", source: "ner", confidence: 0.95)
+
+        vm.setDrug(index: 0, drug: drug)
+
+        XCTAssertEqual(vm.slots[0].drug?.name, "Ibuprofen")
+        XCTAssertNil(vm.slots[0].manualName)
+        XCTAssertTrue(vm.slots[0].isScanned)
+        XCTAssertTrue(vm.slots[0].isFilled)
+    }
+
+    func testSetManualNameFillsSlotAndClearsDrug() {
+        let vm = DrugInputViewModel()
+        let drug = DrugResult(rxcui: "5640", name: "Ibuprofen", dosage: nil, form: nil, source: "ner", confidence: 0.9)
+        vm.setDrug(index: 0, drug: drug)
+
+        vm.setManualName(index: 0, name: "Aspirin")
+
+        XCTAssertNil(vm.slots[0].drug)
+        XCTAssertEqual(vm.slots[0].manualName, "Aspirin")
+        XCTAssertFalse(vm.slots[0].isScanned)
+        XCTAssertTrue(vm.slots[0].isFilled)
+    }
+
+    func testClearSlotResetsSlot() {
+        let vm = DrugInputViewModel()
+        vm.setManualName(index: 1, name: "Warfarin")
+        XCTAssertTrue(vm.slots[1].isFilled)
+
+        vm.clearSlot(index: 1)
+
+        XCTAssertFalse(vm.slots[1].isFilled)
+        XCTAssertNil(vm.slots[1].drug)
+        XCTAssertNil(vm.slots[1].manualName)
+        XCTAssertFalse(vm.slots[1].isScanned)
+    }
+
+    func testBothFilledRequiresBothSlots() {
+        let vm = DrugInputViewModel()
+        vm.setManualName(index: 0, name: "Aspirin")
+        XCTAssertFalse(vm.bothFilled, "One slot filled should not satisfy bothFilled")
+
+        vm.setManualName(index: 1, name: "Warfarin")
+        XCTAssertTrue(vm.bothFilled)
+    }
 }
