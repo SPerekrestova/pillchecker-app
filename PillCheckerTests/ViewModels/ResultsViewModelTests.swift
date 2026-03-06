@@ -48,4 +48,90 @@ final class ResultsViewModelTests: XCTestCase {
         XCTAssertNil(vm.result)
         XCTAssertNotNil(vm.error)
     }
+
+    func testIsLoadingFalseAfterSuccess() async {
+        let config = URLSessionConfiguration.ephemeral
+        config.protocolClasses = [MockURLProtocol.self]
+        let session = URLSession(configuration: config)
+        let client = APIClient(baseURL: "https://test", session: session)
+
+        MockURLProtocol.requestHandler = { request in
+            let json = """
+            {"interactions": [], "safe": true}
+            """.data(using: .utf8)!
+            let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!
+            return (response, json)
+        }
+
+        let vm = ResultsViewModel(apiClient: client)
+        await vm.checkInteractions(drugA: "A", drugB: "B")
+
+        XCTAssertFalse(vm.isLoading)
+        XCTAssertNil(vm.error)
+        XCTAssertNotNil(vm.result)
+        XCTAssertTrue(vm.result!.safe)
+    }
+
+    func testPreviousResultClearedOnNewCheck() async {
+        let config = URLSessionConfiguration.ephemeral
+        config.protocolClasses = [MockURLProtocol.self]
+        let session = URLSession(configuration: config)
+        let client = APIClient(baseURL: "https://test", session: session)
+
+        // First call succeeds
+        MockURLProtocol.requestHandler = { request in
+            let json = """
+            {"interactions": [], "safe": true}
+            """.data(using: .utf8)!
+            let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!
+            return (response, json)
+        }
+
+        let vm = ResultsViewModel(apiClient: client)
+        await vm.checkInteractions(drugA: "A", drugB: "B")
+        XCTAssertNotNil(vm.result)
+
+        // Second call fails
+        MockURLProtocol.requestHandler = { _ in
+            throw URLError(.notConnectedToInternet)
+        }
+
+        await vm.checkInteractions(drugA: "C", drugB: "D")
+        XCTAssertNil(vm.result, "Previous result should be cleared on new check")
+        XCTAssertNotNil(vm.error)
+    }
+
+    func testAPIErrorShowsSpecificDescription() async {
+        let config = URLSessionConfiguration.ephemeral
+        config.protocolClasses = [MockURLProtocol.self]
+        let session = URLSession(configuration: config)
+        let client = APIClient(baseURL: "https://test", session: session)
+
+        MockURLProtocol.requestHandler = { _ in
+            throw URLError(.timedOut)
+        }
+
+        let vm = ResultsViewModel(apiClient: client)
+        await vm.checkInteractions(drugA: "A", drugB: "B")
+
+        XCTAssertEqual(vm.error, "Connection timed out. Check your network.")
+    }
+
+    func testNonAPIErrorShowsGenericMessage() async {
+        let config = URLSessionConfiguration.ephemeral
+        config.protocolClasses = [MockURLProtocol.self]
+        let session = URLSession(configuration: config)
+        let client = APIClient(baseURL: "https://test", session: session)
+
+        MockURLProtocol.requestHandler = { request in
+            let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!
+            return (response, "not json".data(using: .utf8)!)
+        }
+
+        let vm = ResultsViewModel(apiClient: client)
+        await vm.checkInteractions(drugA: "A", drugB: "B")
+
+        XCTAssertNotNil(vm.error)
+        XCTAssertFalse(vm.isLoading)
+    }
 }
