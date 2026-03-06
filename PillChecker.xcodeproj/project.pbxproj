@@ -66,7 +66,7 @@
 			children = (
 				DA7F29AD2F5781B200E9249B /* PillChecker.app */,
 				DA7F29BC2F5781B400E9249B /* PillCheckerTests.xctest */,
-				);
+			);
 			name = Products;
 			sourceTree = "<group>";
 		};
