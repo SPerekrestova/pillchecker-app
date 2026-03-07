@@ -158,5 +158,64 @@ final class APIClientTests: XCTestCase {
         XCTAssertEqual(APIError.serverError(statusCode: 503).errorDescription, "Server error (503). Please try again.")
         XCTAssertNotNil(APIError.networkError(underlying: URLError(.notConnectedToInternet)).errorDescription)
         XCTAssertNotNil(APIError.decodingError(underlying: URLError(.cannotDecodeContentData)).errorDescription)
+        XCTAssertNotNil(APIError.unauthorized.errorDescription)
+    }
+
+    func testUnauthorizedResponseThrowsUnauthorizedError() async {
+        MockURLProtocol.requestHandler = { request in
+            let response = HTTPURLResponse(
+                url: request.url!, statusCode: 401,
+                httpVersion: nil, headerFields: nil
+            )!
+            return (response, Data())
+        }
+        do {
+            _ = try await client.analyze(text: "test")
+            XCTFail("Expected unauthorized error")
+        } catch let error as APIError {
+            if case .unauthorized = error {
+                // expected
+            } else {
+                XCTFail("Expected .unauthorized, got \(error)")
+            }
+        } catch {
+            XCTFail("Wrong error type: \(error)")
+        }
+    }
+
+    func testRequestIncludesAPIKeyHeader() async {
+        var capturedRequest: URLRequest?
+        MockURLProtocol.requestHandler = { request in
+            capturedRequest = request
+            let json = #"{"drugs":[],"raw_text":"test"}"#
+            let response = HTTPURLResponse(
+                url: request.url!, statusCode: 200,
+                httpVersion: nil, headerFields: nil
+            )!
+            return (response, json.data(using: .utf8)!)
+        }
+
+        let config = URLSessionConfiguration.ephemeral
+        config.protocolClasses = [MockURLProtocol.self]
+        let session = URLSession(configuration: config)
+        let apiClient = APIClient(baseURL: "https://test.api", apiKey: "my-secret", session: session)
+        _ = try? await apiClient.analyze(text: "test")
+        XCTAssertEqual(capturedRequest?.value(forHTTPHeaderField: "X-API-Key"), "my-secret")
+    }
+
+    func testNoAPIKeyHeaderWhenKeyIsEmpty() async {
+        var capturedRequest: URLRequest?
+        MockURLProtocol.requestHandler = { request in
+            capturedRequest = request
+            let json = #"{"drugs":[],"raw_text":"test"}"#
+            let response = HTTPURLResponse(
+                url: request.url!, statusCode: 200,
+                httpVersion: nil, headerFields: nil
+            )!
+            return (response, json.data(using: .utf8)!)
+        }
+        // client in setUp() has no apiKey — header must be absent
+        _ = try? await client.analyze(text: "test")
+        XCTAssertNil(capturedRequest?.value(forHTTPHeaderField: "X-API-Key"))
     }
 }
