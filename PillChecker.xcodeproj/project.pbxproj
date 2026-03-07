@@ -358,7 +358,8 @@
 		DA7F29D22F5781B400E9249B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				API_BASE_URL = "http://localhost:8000";
+				API_BASE_URL = "https://pillchecker.duckdns.org";
+				API_KEY = "ac145f7557026b9ee5e9fdd68529554446f0d9fc6671798fcb2063f5eb155871";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
@@ -367,6 +368,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_API_BASE_URL = "$(API_BASE_URL)";
+				INFOPLIST_KEY_API_KEY = "$(API_KEY)";
 				INFOPLIST_KEY_NSCameraUsageDescription = "PillChecker needs camera access to scan medicine labels.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "PillChecker needs photo library access to scan medicine labels from saved photos.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
