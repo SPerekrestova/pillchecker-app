@@ -4,6 +4,7 @@ enum APIError: Error, LocalizedError {
     case networkError(underlying: Error)
     case serverError(statusCode: Int)
     case validationError
+    case unauthorized
     case decodingError(underlying: Error)
     case timeout
 
@@ -12,6 +13,7 @@ enum APIError: Error, LocalizedError {
         case .networkError: return "Can't reach server. Check your connection."
         case .serverError(let code): return "Server error (\(code)). Please try again."
         case .validationError: return "Invalid request. Please try again."
+        case .unauthorized: return "Not authorized. Check API key."
         case .decodingError: return "Unexpected response. Please try again."
         case .timeout: return "Connection timed out. Check your network."
         }
@@ -20,10 +22,12 @@ enum APIError: Error, LocalizedError {
 
 final class APIClient: Sendable {
     let baseURL: String
+    private let apiKey: String
     private let session: URLSession
 
-    init(baseURL: String, session: URLSession = .shared) {
+    init(baseURL: String, apiKey: String = "", session: URLSession = .shared) {
         self.baseURL = baseURL
+        self.apiKey = apiKey
         self.session = session
     }
 
@@ -48,6 +52,9 @@ final class APIClient: Sendable {
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        if !apiKey.isEmpty {
+            request.setValue(apiKey, forHTTPHeaderField: "X-API-Key")
+        }
         request.timeoutInterval = 30
         request.httpBody = try JSONEncoder().encode(body)
 
@@ -63,6 +70,10 @@ final class APIClient: Sendable {
 
         guard let httpResponse = response as? HTTPURLResponse else {
             throw APIError.networkError(underlying: URLError(.badServerResponse))
+        }
+
+        if httpResponse.statusCode == 401 {
+            throw APIError.unauthorized
         }
 
         if httpResponse.statusCode == 422 {

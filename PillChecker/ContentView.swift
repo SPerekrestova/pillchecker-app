@@ -11,7 +11,7 @@ struct ContentView: View {
     @Environment(AppNavigator.self) private var navigator
     @State private var drugInputViewModel = DrugInputViewModel()
 
-    private let apiClient = APIClient(baseURL: AppConfig.apiBaseURL)
+    private let apiClient = APIClient(baseURL: AppConfig.apiBaseURL, apiKey: AppConfig.apiKey)
     private let ocrService = OCRService()
     private let rxNormClient = RxNormClient()
 
