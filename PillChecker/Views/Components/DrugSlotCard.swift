@@ -7,48 +7,62 @@ struct DrugSlotCard: View {
     let onType: () -> Void
     let onClear: () -> Void
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+
     var body: some View {
         VStack(spacing: 12) {
             Text("Drug \(slotIndex + 1)")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
 
-            if slot.isFilled {
-                HStack {
-                    VStack(alignment: .leading) {
-                        Text(slot.displayName ?? "")
-                            .font(.headline)
-                        if slot.isScanned {
-                            Text("Scanned")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                    }
-                    Spacer()
-                    Button(action: onClear) {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundStyle(.secondary)
-                    }
-                }
-            } else {
-                HStack(spacing: 12) {
-                    Button(action: onScan) {
-                        Label("Scan", systemImage: "camera")
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.bordered)
-
-                    Button(action: onType) {
-                        Label("Type", systemImage: "keyboard")
-                            .frame(maxWidth: .infinity)
-                    }
-                    .buttonStyle(.bordered)
+            Group {
+                if slot.isFilled {
+                    filledContent
+                } else {
+                    emptyContent
                 }
             }
+            .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: slot.isFilled)
         }
-        .padding()
-        .background(.background)
-        .clipShape(RoundedRectangle(cornerRadius: 12))
-        .shadow(color: .black.opacity(0.05), radius: 2, y: 1)
+        .cardStyle()
+    }
+
+    private var filledContent: some View {
+        HStack {
+            VStack(alignment: .leading) {
+                Text(slot.displayName ?? "")
+                    .font(.headline)
+                if slot.isScanned {
+                    Text("Scanned")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+            Spacer()
+            Button(action: onClear) {
+                Image(systemName: "xmark.circle.fill")
+                    .foregroundStyle(.secondary)
+                    .frame(minWidth: 44, minHeight: 44)
+            }
+            .accessibilityLabel("Clear drug \(slotIndex + 1)")
+        }
+        .transition(.opacity.combined(with: .scale(scale: 0.95)))
+    }
+
+    private var emptyContent: some View {
+        HStack(spacing: 12) {
+            Button(action: onScan) {
+                Label("Scan", systemImage: "camera")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.bordered)
+
+            Button(action: onType) {
+                Label("Type", systemImage: "keyboard")
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.bordered)
+        }
+        .transition(.opacity.combined(with: .scale(scale: 0.95)))
     }
 }

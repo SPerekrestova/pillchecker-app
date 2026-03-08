@@ -24,7 +24,13 @@ struct HistoryView: View {
                             CheckHistoryCard(record: record)
                         }
                     }
-                    .onDelete(perform: deleteChecks)
+                    .onDelete { offsets in
+                        let filtered = viewModel.filtered(checks)
+                        let idsToDelete = offsets.map { filtered[$0].id }
+                        for check in checks where idsToDelete.contains(check.id) {
+                            modelContext.delete(check)
+                        }
+                    }
                 }
             }
         }
@@ -52,13 +58,6 @@ struct HistoryView: View {
                 .accessibilityIdentifier("newCheckButton")
                 .accessibilityLabel("New Check")
             }
-        }
-    }
-
-    private func deleteChecks(at offsets: IndexSet) {
-        let filtered = viewModel.filtered(checks)
-        for index in offsets {
-            modelContext.delete(filtered[index])
         }
     }
 }

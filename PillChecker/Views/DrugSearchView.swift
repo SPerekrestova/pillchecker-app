@@ -31,7 +31,18 @@ struct DrugSearchView: View {
             }
             .padding()
 
-            if !viewModel.suggestions.isEmpty {
+            if let error = viewModel.searchError {
+                VStack(spacing: 8) {
+                    Text(error)
+                        .foregroundStyle(Theme.critical)
+                        .font(.callout)
+                    Button("Retry") {
+                        viewModel.search()
+                    }
+                    .font(.callout)
+                }
+                .padding(.top, 32)
+            } else if !viewModel.suggestions.isEmpty {
                 List(viewModel.suggestions, id: \.self) { name in
                     Button {
                         select(name: name)

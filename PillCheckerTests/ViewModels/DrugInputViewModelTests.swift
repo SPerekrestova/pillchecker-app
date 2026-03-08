@@ -82,6 +82,28 @@ final class DrugInputViewModelTests: XCTestCase {
         XCTAssertFalse(vm.slots[1].isScanned)
     }
 
+    func testDuplicateDrugDetected() {
+        let vm = DrugInputViewModel()
+        vm.setManualName(index: 0, name: "Aspirin")
+        vm.setManualName(index: 1, name: "aspirin")
+        XCTAssertTrue(vm.hasDuplicateDrugs)
+        XCTAssertFalse(vm.canCheck)
+    }
+
+    func testDifferentDrugsAllowCheck() {
+        let vm = DrugInputViewModel()
+        vm.setManualName(index: 0, name: "Aspirin")
+        vm.setManualName(index: 1, name: "Ibuprofen")
+        XCTAssertFalse(vm.hasDuplicateDrugs)
+        XCTAssertTrue(vm.canCheck)
+    }
+
+    func testCanCheckRequiresBothFilledAndNoDuplicates() {
+        let vm = DrugInputViewModel()
+        vm.setManualName(index: 0, name: "Aspirin")
+        XCTAssertFalse(vm.canCheck, "One slot filled should not allow check")
+    }
+
     func testBothFilledRequiresBothSlots() {
         let vm = DrugInputViewModel()
         vm.setManualName(index: 0, name: "Aspirin")

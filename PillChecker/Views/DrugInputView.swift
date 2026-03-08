@@ -10,28 +10,43 @@ struct DrugInputView: View {
                 DrugSlotCard(
                     slotIndex: index,
                     slot: viewModel.slots[index],
-                    onScan: { navigator.navigate(to: .scan(slot: index)) },
-                    onType: { navigator.navigate(to: .search(slot: index)) },
-                    onClear: { viewModel.clearSlot(index: index) }
+                    onScan: {
+                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                        navigator.navigate(to: .scan(slot: index))
+                    },
+                    onType: {
+                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                        navigator.navigate(to: .search(slot: index))
+                    },
+                    onClear: {
+                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                        viewModel.clearSlot(index: index)
+                    }
                 )
+            }
+
+            if viewModel.hasDuplicateDrugs {
+                Text("Both drugs are the same")
+                    .font(.callout)
+                    .foregroundStyle(Theme.critical)
+            } else if !viewModel.canCheck {
+                Text("Add both drugs to continue")
+                    .font(.callout)
+                    .foregroundStyle(.secondary)
             }
 
             Spacer()
 
             Button {
+                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
                 let names = viewModel.drugNames
                 guard names.count == 2 else { return }
                 navigator.navigate(to: .results(drugA: names[0], drugB: names[1]))
             } label: {
                 Text("Check Interactions")
-                    .font(.headline)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(viewModel.bothFilled ? Color.accentColor : Color.gray.opacity(0.3))
-                    .foregroundStyle(.white)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
             }
-            .disabled(!viewModel.bothFilled)
+            .buttonStyle(PrimaryButtonStyle())
+            .disabled(!viewModel.canCheck)
         }
         .padding()
         .navigationTitle("New Check")

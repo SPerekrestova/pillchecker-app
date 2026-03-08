@@ -74,6 +74,76 @@ final class DrugSearchViewModelTests: XCTestCase {
         XCTAssertFalse(vm.isSearching)
     }
 
+    func testSearchSetsErrorOnNetworkFailure() async throws {
+        MockURLProtocol.requestHandler = { _ in
+            throw URLError(.notConnectedToInternet)
+        }
+
+        let client = RxNormClient(session: session)
+        let vm = DrugSearchViewModel(rxNormClient: client)
+
+        vm.query = "ibuprofen"
+        vm.search()
+
+        // Wait for debounce (300ms) + network
+        try await Task.sleep(for: .milliseconds(600))
+
+        XCTAssertNotNil(vm.searchError, "searchError should be set on network failure")
+        XCTAssertTrue(vm.suggestions.isEmpty, "suggestions should be empty on error")
+        XCTAssertFalse(vm.isSearching)
+    }
+
+    func testSearchClearsErrorOnSuccess() async throws {
+        // First set up a failure to populate searchError
+        MockURLProtocol.requestHandler = { _ in
+            throw URLError(.notConnectedToInternet)
+        }
+
+        let client = RxNormClient(session: session)
+        let vm = DrugSearchViewModel(rxNormClient: client)
+
+        vm.query = "ibuprofen"
+        vm.search()
+        try await Task.sleep(for: .milliseconds(600))
+        XCTAssertNotNil(vm.searchError)
+
+        // Now set up success
+        MockURLProtocol.requestHandler = { request in
+            let url = request.url!.absoluteString
+            if url.contains("approximateTerm") {
+                let json = """
+                {"approximateGroup": {"candidate": [{"rxcui": "5640", "score": "100"}]}}
+                """.data(using: .utf8)!
+                let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!
+                return (response, json)
+            } else {
+                let json = """
+                {"properties": {"name": "Ibuprofen"}}
+                """.data(using: .utf8)!
+                let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!
+                return (response, json)
+            }
+        }
+
+        vm.query = "ibuprofen"
+        vm.search()
+        try await Task.sleep(for: .milliseconds(600))
+
+        XCTAssertNil(vm.searchError, "searchError should be cleared on success")
+        XCTAssertFalse(vm.suggestions.isEmpty)
+    }
+
+    func testShortQueryClearsError() {
+        let client = RxNormClient(session: session)
+        let vm = DrugSearchViewModel(rxNormClient: client)
+
+        vm.searchError = "Some error"
+        vm.query = "a"
+        vm.search()
+
+        XCTAssertNil(vm.searchError, "Short query should clear searchError")
+    }
+
     func testSearchCancelsPreviousTask() async throws {
         var requestCount = 0
         MockURLProtocol.requestHandler = { request in

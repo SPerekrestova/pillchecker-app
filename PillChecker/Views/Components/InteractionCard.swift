@@ -2,6 +2,10 @@ import SwiftUI
 
 struct InteractionCard: View {
     let interaction: SavedInteraction
+    var animationDelay: Double = 0
+
+    @State private var appeared = false
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -22,9 +26,14 @@ struct InteractionCard: View {
                     .foregroundStyle(.secondary)
             }
         }
-        .padding()
-        .background(.background)
-        .clipShape(RoundedRectangle(cornerRadius: 10))
-        .shadow(color: .black.opacity(0.05), radius: 2, y: 1)
+        .cardStyle()
+        .opacity(appeared || reduceMotion ? 1 : 0)
+        .offset(y: appeared || reduceMotion ? 0 : 20)
+        .onAppear {
+            guard !reduceMotion else { appeared = true; return }
+            withAnimation(.easeOut(duration: 0.4).delay(animationDelay)) {
+                appeared = true
+            }
+        }
     }
 }

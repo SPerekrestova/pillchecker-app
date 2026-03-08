@@ -13,6 +13,17 @@ final class DrugInputViewModel {
         slots[0].isFilled && slots[1].isFilled
     }
 
+    var hasDuplicateDrugs: Bool {
+        guard let name0 = slots[0].displayName, let name1 = slots[1].displayName else {
+            return false
+        }
+        return name0.localizedCaseInsensitiveCompare(name1) == .orderedSame
+    }
+
+    var canCheck: Bool {
+        bothFilled && !hasDuplicateDrugs
+    }
+
     var drugNames: [String] {
         slots.compactMap { $0.displayName }
     }

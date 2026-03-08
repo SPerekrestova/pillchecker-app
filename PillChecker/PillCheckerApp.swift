@@ -11,11 +11,16 @@ import SwiftData
 @main
 struct PillCheckerApp: App {
     @State private var navigator = AppNavigator()
+    @State private var hasSeenOnboarding = UserDefaults.standard.bool(forKey: "hasSeenOnboarding")
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environment(navigator)
+            if hasSeenOnboarding {
+                ContentView()
+                    .environment(navigator)
+            } else {
+                OnboardingView(isComplete: $hasSeenOnboarding)
+            }
         }
         .modelContainer(for: CheckRecord.self)
     }

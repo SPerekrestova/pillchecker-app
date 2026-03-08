@@ -103,6 +103,12 @@ final class APIModelsTests: XCTestCase {
         XCTAssertEqual(response.interactions.count, 1)
     }
 
+    func testInteractionResultIdIsOrderIndependent() {
+        let ab = InteractionResult(drugA: "Aspirin", drugB: "Ibuprofen", severity: "MAJOR", description: "d", management: "m")
+        let ba = InteractionResult(drugA: "Ibuprofen", drugB: "Aspirin", severity: "MAJOR", description: "d", management: "m")
+        XCTAssertEqual(ab.id, ba.id, "ID should be the same regardless of drug order")
+    }
+
     func testInteractionsResponseSafeDecodes() throws {
         let json = """
         {
