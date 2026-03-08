@@ -134,4 +134,35 @@ final class ResultsViewModelTests: XCTestCase {
         XCTAssertNotNil(vm.error)
         XCTAssertFalse(vm.isLoading)
     }
+
+    func testRetryAfterErrorSucceeds() async {
+        let config = URLSessionConfiguration.ephemeral
+        config.protocolClasses = [MockURLProtocol.self]
+        let session = URLSession(configuration: config)
+        let client = APIClient(baseURL: "https://test", session: session)
+
+        // First call fails
+        MockURLProtocol.requestHandler = { _ in
+            throw URLError(.notConnectedToInternet)
+        }
+
+        let vm = ResultsViewModel(apiClient: client)
+        await vm.checkInteractions(drugA: "A", drugB: "B")
+        XCTAssertNotNil(vm.error)
+        XCTAssertNil(vm.result)
+
+        // Retry succeeds
+        MockURLProtocol.requestHandler = { request in
+            let json = """
+            {"interactions": [], "safe": true}
+            """.data(using: .utf8)!
+            let response = HTTPURLResponse(url: request.url!, statusCode: 200, httpVersion: nil, headerFields: nil)!
+            return (response, json)
+        }
+
+        await vm.checkInteractions(drugA: "A", drugB: "B")
+        XCTAssertNil(vm.error, "Error should be cleared after successful retry")
+        XCTAssertNotNil(vm.result)
+        XCTAssertTrue(vm.result!.safe)
+    }
 }
