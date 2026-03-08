@@ -22,7 +22,7 @@ struct CheckDetailView: View {
                                 .font(.caption)
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 4)
-                                .background(Color.secondary.opacity(0.15), in: Capsule())
+                                .background(Theme.accentSoft, in: Capsule())
 
                             Text(record.checkedAt, style: .date)
                                 .font(.caption)
@@ -37,8 +37,8 @@ struct CheckDetailView: View {
                         if record.safe {
                             SafeResultView(drugA: record.drugA, drugB: record.drugB)
                         } else {
-                            ForEach(record.interactions, id: \.self) { interaction in
-                                InteractionCard(interaction: interaction)
+                            ForEach(Array(record.interactions.enumerated()), id: \.element) { index, interaction in
+                                InteractionCard(interaction: interaction, animationDelay: Double(index) * 0.1)
                             }
                         }
                     }
