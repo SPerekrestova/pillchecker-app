@@ -19,6 +19,7 @@
 /* Begin PBXFileReference section */
 		DA7F29AD2F5781B200E9249B /* PillChecker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PillChecker.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DA7F29BC2F5781B400E9249B /* PillCheckerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PillCheckerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		DA7F29FF2F5781B400E9249B /* Secrets.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = Secrets.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -58,6 +59,7 @@
 				DA7F29AF2F5781B200E9249B /* PillChecker */,
 				DA7F29BF2F5781B400E9249B /* PillCheckerTests */,
 				DA7F29AE2F5781B200E9249B /* Products */,
+				DA7F29FF2F5781B400E9249B /* Secrets.xcconfig */,
 			);
 			sourceTree = "<group>";
 		};
@@ -357,9 +359,9 @@
 		};
 		DA7F29D22F5781B400E9249B /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = DA7F29FF2F5781B400E9249B /* Secrets.xcconfig */;
 			buildSettings = {
 				API_BASE_URL = "https://pillchecker.duckdns.org";
-				API_KEY = "ac145f7557026b9ee5e9fdd68529554446f0d9fc6671798fcb2063f5eb155871";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;

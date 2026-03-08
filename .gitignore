@@ -23,6 +23,9 @@ Package.resolved
 *.swp
 *~
 
+# Secrets — never commit
+Secrets.xcconfig
+
 # Claude Code
 .claude/
 .idea/
