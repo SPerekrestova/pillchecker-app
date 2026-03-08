@@ -1,6 +1,6 @@
 # Xcode
 xcuserdata/
-*.xcodeproj/project.xcworkspace/xcshareddata/IDEWorkspaceChecks.plist
+*.xcodeproj/
 DerivedData/
 build/
 *.pbxuser

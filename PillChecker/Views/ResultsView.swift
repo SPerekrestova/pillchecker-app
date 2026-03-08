@@ -5,28 +5,24 @@ struct ResultsView: View {
     let drugA: String
     let drugB: String
     let source: String
+    let apiClient: APIClient
     @Environment(AppNavigator.self) private var navigator
     @Environment(\.modelContext) private var modelContext
-    @State private var viewModel: ResultsViewModel
-
-    init(drugA: String, drugB: String, source: String, apiClient: APIClient) {
-        self.drugA = drugA
-        self.drugB = drugB
-        self.source = source
-        self._viewModel = State(initialValue: ResultsViewModel(apiClient: apiClient))
-    }
+    @State private var result: InteractionsResponse?
+    @State private var isLoading = false
+    @State private var error: String?
 
     var body: some View {
         Group {
-            if viewModel.isLoading {
+            if isLoading {
                 ProgressView("Checking interactions...")
-            } else if let error = viewModel.error {
+            } else if let error {
                 ContentUnavailableView(
                     "Error",
                     systemImage: "exclamationmark.triangle",
                     description: Text(error)
                 )
-            } else if let result = viewModel.result {
+            } else if let result {
                 ScrollView {
                     VStack(spacing: 16) {
                         if result.safe {
@@ -49,7 +45,7 @@ struct ResultsView: View {
         }
         .navigationTitle("Results")
         .toolbar {
-            if viewModel.result != nil {
+            if result != nil {
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save & Done") {
                         saveAndDismiss()
@@ -58,12 +54,18 @@ struct ResultsView: View {
             }
         }
         .task {
-            await viewModel.checkInteractions(drugA: drugA, drugB: drugB)
+            isLoading = true
+            do {
+                result = try await apiClient.checkInteractions(drugs: [drugA, drugB])
+            } catch {
+                self.error = (error as? APIError)?.errorDescription ?? "Something went wrong."
+            }
+            isLoading = false
         }
     }
 
     private func saveAndDismiss() {
-        guard let result = viewModel.result else { return }
+        guard let result else { return }
 
         let interactions = result.interactions.map {
             SavedInteraction(
