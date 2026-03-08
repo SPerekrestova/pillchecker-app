@@ -23,7 +23,8 @@ struct CheckHistoryCard: View {
             Spacer()
 
             Image(systemName: record.safe ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
-                .foregroundStyle(record.safe ? .green : .orange)
+                .foregroundStyle(record.safe ? Theme.safe : Theme.warning)
+                .accessibilityLabel(record.safe ? "Safe" : "Interactions found")
         }
         .padding(.vertical, 4)
     }
