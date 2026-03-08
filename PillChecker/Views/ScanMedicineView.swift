@@ -5,7 +5,6 @@ struct ScanMedicineView: View {
     let drugInputViewModel: DrugInputViewModel
     @Environment(AppNavigator.self) private var navigator
     @State private var viewModel: ScanViewModel
-    @State private var showSourcePicker = true
     @State private var imageSource: UIImagePickerController.SourceType = .camera
 
     init(slot: Int, drugInputViewModel: DrugInputViewModel, apiClient: APIClient, ocrService: OCRService) {
@@ -17,83 +16,118 @@ struct ScanMedicineView: View {
     var body: some View {
         VStack(spacing: 20) {
             if let image = viewModel.capturedImage {
-                Image(uiImage: image)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(maxHeight: 250)
-                    .clipShape(RoundedRectangle(cornerRadius: 12))
-
-                if viewModel.isProcessing {
-                    ProgressView("Analyzing...")
-                } else if let error = viewModel.error {
-                    Text(error)
-                        .foregroundStyle(.red)
-                        .font(.callout)
-                }
-
-                if viewModel.extractedDrug != nil || viewModel.editableDrugName.isEmpty == false {
-                    TextField("Drug name", text: $viewModel.editableDrugName)
-                        .textFieldStyle(.roundedBorder)
-                        .font(.headline)
-
-                    if let rawText = viewModel.recognizedText {
-                        DisclosureGroup("Raw OCR Text") {
-                            Text(rawText)
-                                .font(.caption.monospaced())
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                        }
-                    }
-
-                    HStack(spacing: 16) {
-                        Button("Retake") {
-                            viewModel.retake()
-                            showSourcePicker = true
-                        }
-                        .buttonStyle(.bordered)
-
-                        Button("Use This Drug") {
-                            let name = viewModel.editableDrugName.trimmingCharacters(in: .whitespaces)
-                            guard !name.isEmpty else { return }
-
-                            if let drug = viewModel.extractedDrug {
-                                drugInputViewModel.setDrug(index: slot, drug: drug)
-                            } else {
-                                drugInputViewModel.setManualName(index: slot, name: name)
-                            }
-
-                            navigator.pop()
-                        }
-                        .buttonStyle(.borderedProminent)
-                    }
-                }
+                capturedImageSection(image)
             } else {
-                ContentUnavailableView(
-                    "Scan Medicine",
-                    systemImage: "camera.viewfinder",
-                    description: Text("Take a photo of the medicine packaging to identify the drug.")
-                )
+                sourceSelectionSection
             }
 
             Spacer()
         }
         .padding()
         .navigationTitle("Scan Medicine")
-        .confirmationDialog("Choose Source", isPresented: $showSourcePicker) {
-            if UIImagePickerController.isSourceTypeAvailable(.camera) {
-                Button("Camera") {
-                    imageSource = .camera
-                    viewModel.showCamera = true
-                }
-            }
-            Button("Photo Library") {
-                imageSource = .photoLibrary
-                viewModel.showCamera = true
-            }
-        }
         .sheet(isPresented: $viewModel.showCamera) {
             ImagePicker(sourceType: imageSource) { image in
                 Task { await viewModel.processImage(image) }
             }
+        }
+    }
+
+    // MARK: - Source selection (replaces auto-firing confirmation dialog)
+
+    private var sourceSelectionSection: some View {
+        VStack(spacing: 24) {
+            Image(systemName: "camera.viewfinder")
+                .font(.system(size: 48))
+                .foregroundStyle(Theme.accent)
+
+            Text("Take a photo of the medicine packaging to identify the drug.")
+                .font(.body)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+
+            VStack(spacing: 12) {
+                if UIImagePickerController.isSourceTypeAvailable(.camera) {
+                    Button {
+                        imageSource = .camera
+                        viewModel.showCamera = true
+                    } label: {
+                        Label("Take Photo", systemImage: "camera")
+                            .frame(maxWidth: .infinity)
+                    }
+                    .buttonStyle(.borderedProminent)
+                }
+
+                Button {
+                    imageSource = .photoLibrary
+                    viewModel.showCamera = true
+                } label: {
+                    Label("Choose from Library", systemImage: "photo.on.rectangle")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+            }
+        }
+        .padding(.top, 40)
+    }
+
+    // MARK: - Captured image result
+
+    @ViewBuilder
+    private func capturedImageSection(_ image: UIImage) -> some View {
+        Image(uiImage: image)
+            .resizable()
+            .scaledToFit()
+            .frame(maxHeight: 250)
+            .clipShape(RoundedRectangle(cornerRadius: Theme.cardRadius))
+
+        if viewModel.isProcessing {
+            ProgressView("Analyzing...")
+        } else if let error = viewModel.error {
+            Text(error)
+                .foregroundStyle(Theme.critical)
+                .font(.callout)
+        }
+
+        // Only show drug name field when we have an extracted drug
+        if viewModel.extractedDrug != nil {
+            TextField("Drug name", text: $viewModel.editableDrugName)
+                .textFieldStyle(.roundedBorder)
+                .font(.headline)
+
+            if let rawText = viewModel.recognizedText {
+                DisclosureGroup("Raw OCR Text") {
+                    Text(rawText)
+                        .font(.caption.monospaced())
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            }
+
+            HStack(spacing: 16) {
+                Button("Retake") {
+                    viewModel.retake()
+                }
+                .buttonStyle(.bordered)
+
+                Button("Use This Drug") {
+                    let name = viewModel.editableDrugName.trimmingCharacters(in: .whitespaces)
+                    guard !name.isEmpty else { return }
+
+                    if let drug = viewModel.extractedDrug {
+                        drugInputViewModel.setDrug(index: slot, drug: drug)
+                    } else {
+                        drugInputViewModel.setManualName(index: slot, name: name)
+                    }
+
+                    navigator.pop()
+                }
+                .buttonStyle(.borderedProminent)
+            }
+        } else if !viewModel.isProcessing && viewModel.error != nil {
+            // Error state — offer retake only
+            Button("Retake") {
+                viewModel.retake()
+            }
+            .buttonStyle(.bordered)
         }
     }
 }
