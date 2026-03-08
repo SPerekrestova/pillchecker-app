@@ -6,6 +6,7 @@ final class DrugSearchViewModel {
     var query = ""
     var suggestions: [String] = []
     var isSearching = false
+    var searchError: String?
 
     private let rxNormClient: RxNormClient
     private var searchTask: Task<Void, Never>?
@@ -20,6 +21,7 @@ final class DrugSearchViewModel {
         let currentQuery = query
         guard currentQuery.trimmingCharacters(in: .whitespaces).count >= 2 else {
             suggestions = []
+            searchError = nil
             return
         }
 
@@ -30,10 +32,17 @@ final class DrugSearchViewModel {
             isSearching = true
             defer { isSearching = false }
 
-            let results = await rxNormClient.suggest(query: currentQuery)
-            guard !Task.isCancelled else { return }
+            searchError = nil
 
-            suggestions = results
+            do {
+                let results = try await rxNormClient.suggestThrowing(query: currentQuery)
+                guard !Task.isCancelled else { return }
+                suggestions = results
+            } catch {
+                guard !Task.isCancelled else { return }
+                suggestions = []
+                searchError = "Couldn't load suggestions. Check your connection."
+            }
         }
     }
 }

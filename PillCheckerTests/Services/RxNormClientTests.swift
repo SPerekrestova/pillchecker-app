@@ -73,4 +73,17 @@ final class RxNormClientTests: XCTestCase {
         let results = await client.suggest(query: "test")
         XCTAssertTrue(results.isEmpty)
     }
+
+    func testNetworkErrorThrows() async {
+        MockURLProtocol.requestHandler = { _ in
+            throw URLError(.notConnectedToInternet)
+        }
+
+        do {
+            _ = try await client.suggestThrowing(query: "test")
+            XCTFail("Should have thrown")
+        } catch {
+            // Expected
+        }
+    }
 }
