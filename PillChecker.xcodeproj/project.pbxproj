@@ -52,6 +52,23 @@
 		};
 /* End PBXFrameworksBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		DA7F2A002F5781B400E9249B /* Generate AppConfig */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Generate AppConfig";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "PLIST=\"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/AppConfig.plist\"\nplutil -create xml1 \"$PLIST\"\nplutil -insert API_BASE_URL -string \"${API_BASE_URL}\" \"$PLIST\"\nplutil -insert API_KEY -string \"${API_KEY}\" \"$PLIST\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXGroup section */
 		DA7F29A42F5781B200E9249B = {
 			isa = PBXGroup;
@@ -82,6 +99,7 @@
 				DA7F29A92F5781B200E9249B /* Sources */,
 				DA7F29AA2F5781B200E9249B /* Frameworks */,
 				DA7F29AB2F5781B200E9249B /* Resources */,
+				DA7F2A002F5781B400E9249B /* Generate AppConfig */,
 			);
 			buildRules = (
 			);
@@ -240,7 +258,7 @@
 				DEVELOPMENT_TEAM = F6QHU754W3;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -304,7 +322,7 @@
 				DEVELOPMENT_TEAM = F6QHU754W3;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -325,8 +343,9 @@
 		};
 		DA7F29D12F5781B400E9249B /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = DA7F29FF2F5781B400E9249B /* Secrets.xcconfig */;
 			buildSettings = {
-				API_BASE_URL = "http://localhost:8000";
+				API_BASE_URL = "https://pillchecker.duckdns.org";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
@@ -335,6 +354,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_API_BASE_URL = "$(API_BASE_URL)";
+				INFOPLIST_KEY_API_KEY = "$(API_KEY)";
 				INFOPLIST_KEY_NSCameraUsageDescription = "PillChecker needs camera access to scan medicine labels.";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "PillChecker needs photo library access to scan medicine labels from saved photos.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;

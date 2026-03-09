@@ -20,12 +20,12 @@ struct ResultsView: View {
 
     var body: some View {
         Group {
-            if viewModel.isLoading {
-                loadingView
+            if let result = viewModel.result {
+                resultsContent(result)
             } else if viewModel.error != nil {
                 errorView
-            } else if let result = viewModel.result {
-                resultsContent(result)
+            } else {
+                loadingView
             }
         }
         .navigationTitle("Results")
