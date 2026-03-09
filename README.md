@@ -2,6 +2,8 @@
 
 A native iOS app that checks drug-drug interactions by scanning or searching for two medications.
 
+![](Demo.gif)
+
 **Backend API:** [pillchecker-api](https://github.com/SPerekrestova/pillchecker-api)
 
 ## Requirements
@@ -26,38 +28,10 @@ Run on simulator or device with **Cmd+R**.
 
 | Layer | Technology |
 |-------|-----------|
-| UI | SwiftUI + `NavigationStack` |
-| State | `@Observable` ViewModels |
-| Navigation | `AppNavigator` environment object + typed `Route` enum |
 | Persistence | SwiftData (`CheckRecord`) |
 | OCR | Apple Vision (`VNRecognizeTextRequest`) |
 | Drug search | RxNorm REST API |
 | Interaction check | Custom backend API |
-
-### Project structure
-
-```
-PillChecker/            ← app sources
-  Models/               ← data types (DrugResult, CheckRecord, …)
-  Services/             ← APIClient, RxNormClient, OCRService
-  ViewModels/           ← @Observable view models
-  Views/                ← SwiftUI screens and components
-  Navigation/           ← AppNavigator, Route
-  Utilities/            ← AppConfig
-PillCheckerTests/       ← unit tests
-PillCheckerUITests/     ← UI tests
-```
-
-## Running Tests
-
-```bash
-xcodebuild test \
-  -project PillChecker.xcodeproj \
-  -scheme PillCheckerTests \
-  -destination 'platform=iOS Simulator,name=iPhone 17'
-```
-
-Or press **Cmd+U** in Xcode.
 
 ## Data Sources
 
