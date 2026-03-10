@@ -112,4 +112,20 @@ final class DrugInputViewModelTests: XCTestCase {
         vm.setManualName(index: 1, name: "Warfarin")
         XCTAssertTrue(vm.bothFilled)
     }
+
+    func testSetManualNameAfterScanUsesEditedName() {
+        let vm = DrugInputViewModel()
+        let drug = DrugResult(
+            rxcui: "5640", name: "Ibuprofen",
+            dosage: nil, form: nil, source: "ner", confidence: 0.9
+        )
+        vm.setDrug(index: 0, drug: drug)
+        XCTAssertEqual(vm.slots[0].displayName, "Ibuprofen")
+
+        // User edits the name — view should call setManualName
+        vm.setManualName(index: 0, name: "Paracetamol")
+        XCTAssertEqual(vm.slots[0].displayName, "Paracetamol")
+        XCTAssertNil(vm.slots[0].drug)
+        XCTAssertFalse(vm.slots[0].isScanned)
+    }
 }
