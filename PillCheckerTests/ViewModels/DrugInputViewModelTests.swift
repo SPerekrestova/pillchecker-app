@@ -112,4 +112,40 @@ final class DrugInputViewModelTests: XCTestCase {
         vm.setManualName(index: 1, name: "Warfarin")
         XCTAssertTrue(vm.bothFilled)
     }
+
+    func testSetManualNameAfterScanUsesEditedName() {
+        let vm = DrugInputViewModel()
+        let drug = DrugResult(
+            rxcui: "5640", name: "Ibuprofen",
+            dosage: nil, form: nil, source: "ner", confidence: 0.9
+        )
+        vm.setDrug(index: 0, drug: drug)
+        XCTAssertEqual(vm.slots[0].displayName, "Ibuprofen")
+
+        // User edits the name — view should call setManualName
+        vm.setManualName(index: 0, name: "Paracetamol")
+        XCTAssertEqual(vm.slots[0].displayName, "Paracetamol")
+        XCTAssertNil(vm.slots[0].drug)
+        XCTAssertFalse(vm.slots[0].isScanned)
+    }
+
+    func testSetDrugPreservesMetadataAfterManualEntry() {
+        let vm = DrugInputViewModel()
+        // Start with a manual entry
+        vm.setManualName(index: 0, name: "Paracetamol")
+        XCTAssertEqual(vm.slots[0].displayName, "Paracetamol")
+        XCTAssertFalse(vm.slots[0].isScanned)
+
+        // Now set a full drug result (unchanged name path in scan flow)
+        let drug = DrugResult(
+            rxcui: "161", name: "Paracetamol",
+            dosage: "500mg", form: nil, source: "ner", confidence: 0.95
+        )
+        vm.setDrug(index: 0, drug: drug)
+        XCTAssertEqual(vm.slots[0].displayName, "Paracetamol")
+        XCTAssertEqual(vm.slots[0].drug?.rxcui, "161")
+        XCTAssertEqual(vm.slots[0].drug?.dosage, "500mg")
+        XCTAssertTrue(vm.slots[0].isScanned)
+        XCTAssertNil(vm.slots[0].manualName)
+    }
 }

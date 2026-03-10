@@ -112,9 +112,12 @@ struct ScanMedicineView: View {
                     let name = viewModel.editableDrugName.trimmingCharacters(in: .whitespaces)
                     guard !name.isEmpty else { return }
 
-                    if let drug = viewModel.extractedDrug {
+                    if let drug = viewModel.extractedDrug,
+                       drug.name == name {
+                        // Name unchanged — use the full DrugResult
                         drugInputViewModel.setDrug(index: slot, drug: drug)
                     } else {
+                        // User edited the name — use manual entry
                         drugInputViewModel.setManualName(index: slot, name: name)
                     }
 
