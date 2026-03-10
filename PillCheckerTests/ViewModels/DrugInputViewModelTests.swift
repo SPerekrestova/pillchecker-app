@@ -128,4 +128,24 @@ final class DrugInputViewModelTests: XCTestCase {
         XCTAssertNil(vm.slots[0].drug)
         XCTAssertFalse(vm.slots[0].isScanned)
     }
+
+    func testSetDrugPreservesMetadataAfterManualEntry() {
+        let vm = DrugInputViewModel()
+        // Start with a manual entry
+        vm.setManualName(index: 0, name: "Paracetamol")
+        XCTAssertEqual(vm.slots[0].displayName, "Paracetamol")
+        XCTAssertFalse(vm.slots[0].isScanned)
+
+        // Now set a full drug result (unchanged name path in scan flow)
+        let drug = DrugResult(
+            rxcui: "161", name: "Paracetamol",
+            dosage: "500mg", form: nil, source: "ner", confidence: 0.95
+        )
+        vm.setDrug(index: 0, drug: drug)
+        XCTAssertEqual(vm.slots[0].displayName, "Paracetamol")
+        XCTAssertEqual(vm.slots[0].drug?.rxcui, "161")
+        XCTAssertEqual(vm.slots[0].drug?.dosage, "500mg")
+        XCTAssertTrue(vm.slots[0].isScanned)
+        XCTAssertNil(vm.slots[0].manualName)
+    }
 }
