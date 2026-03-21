@@ -16,7 +16,7 @@ enum Theme {
     static let warning = Color(light: Color(hex: 0xEA580C), dark: Color(hex: 0xFB923C))
 
     static let caution = Color(light: Color(hex: 0xCA8A04), dark: Color(hex: 0xFACC15))
-    static let cautionText = Color(hex: 0x713F12)
+    static let cautionText = Color(light: Color(hex: 0x92400E), dark: Color(hex: 0x713F12))
 
     static let cardBackground = Color(light: .white, dark: Color(hex: 0x1C1C1E))
     static let cardBorder = Color(light: Color(hex: 0xE5E7EB), dark: Color(hex: 0x2C2C2E))

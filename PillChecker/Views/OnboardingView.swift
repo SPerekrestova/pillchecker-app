@@ -36,6 +36,12 @@ struct OnboardingView: View {
 
                 Spacer()
 
+                Text("For informational purposes only. Not a substitute for professional medical advice. Always consult your doctor or pharmacist.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 32)
+
                 Button {
                     UserDefaults.standard.set(true, forKey: "hasSeenOnboarding")
                     isComplete = true

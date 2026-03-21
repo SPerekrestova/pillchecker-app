@@ -17,9 +17,13 @@ final class RxNormClient: Sendable {
         guard trimmed.count >= 2 else { return [] }
 
         let encoded = trimmed.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? trimmed
-        let url = URL(string: "\(baseURL)/approximateTerm.json?term=\(encoded)&maxEntries=5")!
+        guard let url = URL(string: "\(baseURL)/approximateTerm.json?term=\(encoded)&maxEntries=5") else {
+            throw URLError(.badURL)
+        }
 
-        let (data, _) = try await session.data(from: url)
+        var request = URLRequest(url: url)
+        request.timeoutInterval = 15
+        let (data, _) = try await session.data(for: request)
         let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
         let group = json?["approximateGroup"] as? [String: Any]
         let candidates = group?["candidate"] as? [[String: Any]] ?? []
@@ -47,8 +51,12 @@ final class RxNormClient: Sendable {
 
     private func resolveName(rxcui: String) async -> String? {
         do {
-            let url = URL(string: "\(baseURL)/rxcui/\(rxcui)/properties.json")!
-            let (data, _) = try await session.data(from: url)
+            guard let url = URL(string: "\(baseURL)/rxcui/\(rxcui)/properties.json") else {
+                return nil
+            }
+            var request = URLRequest(url: url)
+            request.timeoutInterval = 15
+            let (data, _) = try await session.data(for: request)
             let json = try JSONSerialization.jsonObject(with: data) as? [String: Any]
             let properties = json?["properties"] as? [String: Any]
             return properties?["name"] as? String
