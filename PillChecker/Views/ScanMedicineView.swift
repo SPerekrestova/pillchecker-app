@@ -13,17 +13,25 @@ struct ScanMedicineView: View {
         self._viewModel = State(initialValue: ScanViewModel(apiClient: apiClient, ocrService: ocrService))
     }
 
+    private var network = NetworkMonitor.shared
+
     var body: some View {
-        VStack(spacing: 20) {
-            if let image = viewModel.capturedImage {
-                capturedImageSection(image)
-            } else {
-                sourceSelectionSection
+        VStack(spacing: 0) {
+            if !network.isConnected {
+                OfflineBanner()
             }
 
-            Spacer()
+            ScrollView {
+                VStack(spacing: 20) {
+                    if let image = viewModel.capturedImage {
+                        capturedImageSection(image)
+                    } else {
+                        sourceSelectionSection
+                    }
+                }
+                .padding()
+            }
         }
-        .padding()
         .navigationTitle("Scan Medicine")
         .sheet(isPresented: $viewModel.showCamera) {
             ImagePicker(sourceType: imageSource) { image in
@@ -86,6 +94,7 @@ struct ScanMedicineView: View {
             Text(error)
                 .foregroundStyle(Theme.critical)
                 .font(.callout)
+                .accessibilityAddTraits(.isStaticText)
         }
 
         // Only show drug name field when we have an extracted drug
@@ -93,6 +102,7 @@ struct ScanMedicineView: View {
             TextField("Drug name", text: $viewModel.editableDrugName)
                 .textFieldStyle(.roundedBorder)
                 .font(.headline)
+                .accessibilityLabel("Identified drug name")
 
             if let rawText = viewModel.recognizedText {
                 DisclosureGroup("Raw OCR Text") {
@@ -102,31 +112,30 @@ struct ScanMedicineView: View {
                 }
             }
 
-            HStack(spacing: 16) {
-                Button("Retake") {
-                    viewModel.retake()
-                }
-                .buttonStyle(.bordered)
-
-                Button("Use This Drug") {
-                    let name = viewModel.editableDrugName.trimmingCharacters(in: .whitespaces)
-                    guard !name.isEmpty else { return }
-
-
-                    if let drug = viewModel.extractedDrug,
-                       drug.name.localizedCaseInsensitiveCompare(name) == .orderedSame {
-                        // Name unchanged — use the full DrugResult
-                        drugInputViewModel.setDrug(index: slot, drug: drug)
-                    } else {
-                        // User edited the name — use manual entry
-                        drugInputViewModel.setManualName(index: slot, name: name)
-                    }
-
-                    navigator.pop()
-                }
-                .buttonStyle(.borderedProminent)
-                .disabled(viewModel.editableDrugName.trimmingCharacters(in: .whitespaces).isEmpty)
+            Button("Retake") {
+                viewModel.retake()
             }
+            .buttonStyle(.bordered)
+
+            Button {
+                let name = viewModel.editableDrugName.trimmingCharacters(in: .whitespaces)
+                guard !name.isEmpty else { return }
+
+                if let drug = viewModel.extractedDrug,
+                   drug.name.localizedCaseInsensitiveCompare(name) == .orderedSame {
+                    // Name unchanged — use the full DrugResult
+                    drugInputViewModel.setDrug(index: slot, drug: drug)
+                } else {
+                    // User edited the name — use manual entry
+                    drugInputViewModel.setManualName(index: slot, name: name)
+                }
+
+                navigator.pop()
+            } label: {
+                Text("Use This Drug")
+            }
+            .buttonStyle(PrimaryButtonStyle())
+            .disabled(viewModel.editableDrugName.trimmingCharacters(in: .whitespaces).isEmpty)
         } else if !viewModel.isProcessing && viewModel.error != nil {
             // Error state — offer retake only
             Button("Retake") {

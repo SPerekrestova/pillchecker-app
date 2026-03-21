@@ -6,6 +6,8 @@ struct HistoryView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \CheckRecord.checkedAt, order: .reverse) private var checks: [CheckRecord]
     @State private var viewModel = HistoryViewModel()
+    @State private var pendingDeleteIDs: [UUID] = []
+    @State private var showDeleteConfirmation = false
 
     var body: some View {
         Group {
@@ -26,13 +28,24 @@ struct HistoryView: View {
                     }
                     .onDelete { offsets in
                         let filtered = viewModel.filtered(checks)
-                        let idsToDelete = offsets.map { filtered[$0].id }
-                        for check in checks where idsToDelete.contains(check.id) {
-                            modelContext.delete(check)
-                        }
+                        pendingDeleteIDs = offsets.map { filtered[$0].id }
+                        showDeleteConfirmation = true
                     }
                 }
             }
+        }
+        .alert("Delete Check?", isPresented: $showDeleteConfirmation) {
+            Button("Delete", role: .destructive) {
+                for check in checks where pendingDeleteIDs.contains(check.id) {
+                    modelContext.delete(check)
+                }
+                pendingDeleteIDs = []
+            }
+            Button("Cancel", role: .cancel) {
+                pendingDeleteIDs = []
+            }
+        } message: {
+            Text("This action cannot be undone.")
         }
         .navigationTitle("PillChecker")
         .searchable(text: $viewModel.searchQuery, prompt: "Search drugs")

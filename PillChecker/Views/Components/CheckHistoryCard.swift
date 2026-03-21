@@ -26,6 +26,6 @@ struct CheckHistoryCard: View {
                 .foregroundStyle(record.safe ? Theme.safe : Theme.warning)
                 .accessibilityLabel(record.safe ? "Safe" : "Interactions found")
         }
-        .padding(.vertical, 4)
+        .padding(.vertical, 8)
     }
 }

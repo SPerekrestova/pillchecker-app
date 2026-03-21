@@ -18,15 +18,24 @@ struct ResultsView: View {
         self._viewModel = State(initialValue: ResultsViewModel(apiClient: apiClient))
     }
 
+    private var network = NetworkMonitor.shared
+
     var body: some View {
-        Group {
-            if let result = viewModel.result {
-                resultsContent(result)
-            } else if viewModel.error != nil {
-                errorView
-            } else {
-                loadingView
+        VStack(spacing: 0) {
+            if !network.isConnected {
+                OfflineBanner()
             }
+
+            Group {
+                if let result = viewModel.result {
+                    resultsContent(result)
+                } else if viewModel.error != nil {
+                    errorView
+                } else {
+                    loadingView
+                }
+            }
+            .frame(maxHeight: .infinity)
         }
         .navigationTitle("Results")
         .task {
@@ -45,20 +54,15 @@ struct ResultsView: View {
             Text("Checking interactions...")
                 .foregroundStyle(.secondary)
         }
+        .cardStyle()
+        .padding()
     }
 
     // MARK: - Error with retry
 
     private var errorView: some View {
-        ContentUnavailableView {
-            Label("Error", systemImage: "exclamationmark.triangle")
-        } description: {
-            Text(viewModel.error ?? "Something went wrong.")
-        } actions: {
-            Button("Try Again") {
-                Task { await checkInteractions() }
-            }
-            .buttonStyle(.bordered)
+        ErrorStateView(message: viewModel.error ?? "Something went wrong.") {
+            Task { await checkInteractions() }
         }
     }
 
