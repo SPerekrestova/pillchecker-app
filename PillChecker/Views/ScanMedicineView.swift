@@ -112,8 +112,9 @@ struct ScanMedicineView: View {
                     let name = viewModel.editableDrugName.trimmingCharacters(in: .whitespaces)
                     guard !name.isEmpty else { return }
 
+
                     if let drug = viewModel.extractedDrug,
-                       drug.name == name {
+                       drug.name.localizedCaseInsensitiveCompare(name) == .orderedSame {
                         // Name unchanged — use the full DrugResult
                         drugInputViewModel.setDrug(index: slot, drug: drug)
                     } else {
@@ -124,6 +125,7 @@ struct ScanMedicineView: View {
                     navigator.pop()
                 }
                 .buttonStyle(.borderedProminent)
+                .disabled(viewModel.editableDrugName.trimmingCharacters(in: .whitespaces).isEmpty)
             }
         } else if !viewModel.isProcessing && viewModel.error != nil {
             // Error state — offer retake only

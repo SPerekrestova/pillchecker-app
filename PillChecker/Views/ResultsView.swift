@@ -84,6 +84,12 @@ struct ResultsView: View {
                     }
                 }
 
+                Text("For informational purposes only. Not a substitute for professional medical advice.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal)
+
                 Button {
                     saveAndDismiss(result)
                 } label: {
@@ -103,6 +109,10 @@ struct ResultsView: View {
         if let result = viewModel.result {
             let generator = UINotificationFeedbackGenerator()
             generator.notificationOccurred(result.safe ? .success : .warning)
+            UIAccessibility.post(
+                notification: .screenChanged,
+                argument: result.safe ? "No known interactions found" : "Interactions found"
+            )
         }
     }
 

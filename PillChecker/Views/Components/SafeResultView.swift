@@ -23,6 +23,7 @@ struct SafeResultView: View {
                 .opacity(showSubtitle || reduceMotion ? 1 : 0)
         }
         .padding(32)
+        .accessibilityElement(children: .combine)
         .onAppear {
             guard !reduceMotion else {
                 showTitle = true

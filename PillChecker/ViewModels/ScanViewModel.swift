@@ -38,7 +38,7 @@ final class ScanViewModel {
                 return
             }
 
-            await analyzeText(text)
+            await analyzeText(String(text.prefix(5000)))
         } catch {
             self.error = "Failed to read text from image."
             isProcessing = false

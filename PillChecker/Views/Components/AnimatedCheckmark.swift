@@ -8,6 +8,7 @@ struct AnimatedCheckmark: View {
         Image(systemName: "checkmark.circle.fill")
             .font(.system(size: 64))
             .foregroundStyle(Theme.safe)
+            .accessibilityHidden(true)
             .scaleEffect(appeared || reduceMotion ? 1 : 0)
             .opacity(appeared || reduceMotion ? 1 : 0)
             .onAppear {

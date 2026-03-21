@@ -27,6 +27,7 @@ struct InteractionCard: View {
             }
         }
         .cardStyle()
+        .accessibilityElement(children: .combine)
         .opacity(appeared || reduceMotion ? 1 : 0)
         .offset(y: appeared || reduceMotion ? 0 : 20)
         .onAppear {
