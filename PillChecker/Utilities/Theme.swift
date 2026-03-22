@@ -7,19 +7,35 @@ enum Theme {
     // MARK: Color Tokens
 
     static let accent = Color("AccentColor")
-    static let accentSoft = Color(light: Color(hex: 0xEEF2FF), dark: Color(hex: 0x4F46E5, opacity: 0.20))
+    static let accentSoft = Color(light: Color(hex: 0xE6F2EE), dark: Color(hex: 0x3D7A68, opacity: 0.20))
 
     static let safe = Color(light: Color(hex: 0x059669), dark: Color(hex: 0x34D399))
     static let safeSoft = Color(light: Color(hex: 0xECFDF5), dark: Color(hex: 0x059669, opacity: 0.20))
 
     static let critical = Color(light: Color(hex: 0xDC2626), dark: Color(hex: 0xF87171))
-    static let warning = Color(light: Color(hex: 0xEA580C), dark: Color(hex: 0xFB923C))
+    static let warning = Color(light: Color(hex: 0xC2410C), dark: Color(hex: 0xFB923C))
 
     static let caution = Color(light: Color(hex: 0xCA8A04), dark: Color(hex: 0xFACC15))
     static let cautionText = Color(light: Color(hex: 0x92400E), dark: Color(hex: 0x713F12))
 
-    static let cardBackground = Color(light: .white, dark: Color(hex: 0x1C1C1E))
-    static let cardBorder = Color(light: Color(hex: 0xE5E7EB), dark: Color(hex: 0x2C2C2E))
+    static let cardBackground = Color(light: .white, dark: Color(hex: 0x1A1F1C))
+    static let cardBorder = Color(light: Color(hex: 0xD4DDD4), dark: Color(hex: 0x2C332C))
+
+    // MARK: Branded Text Colors
+
+    static let textPrimary = Color(light: Color(hex: 0x1F3D33), dark: Color(hex: 0xF0FDF4))
+    static let textSecondary = Color(light: Color(hex: 0x5F7A6F), dark: Color(hex: 0x94A3B8))
+
+    // MARK: Severity Helpers
+
+    static func severityColor(_ severity: String) -> Color {
+        switch severity.uppercased() {
+        case "MAJOR": return critical
+        case "MODERATE": return warning
+        case "MINOR": return caution
+        default: return .gray
+        }
+    }
 
     // MARK: Card Constants
 
@@ -71,9 +87,94 @@ struct CardStyle: ViewModifier {
     }
 }
 
+// MARK: - SlotEmptyCardStyle
+
+struct SlotEmptyCardStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .padding()
+            .background(Theme.accentSoft)
+            .clipShape(RoundedRectangle(cornerRadius: Theme.cardRadius))
+            .overlay(
+                RoundedRectangle(cornerRadius: Theme.cardRadius)
+                    .strokeBorder(Theme.accent, style: StrokeStyle(lineWidth: 2, dash: [6, 4]))
+            )
+    }
+}
+
+// MARK: - SlotFilledCardStyle
+
+struct SlotFilledCardStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .padding()
+            .background(Theme.cardBackground)
+            .clipShape(RoundedRectangle(cornerRadius: Theme.cardRadius))
+            .overlay(
+                RoundedRectangle(cornerRadius: Theme.cardRadius)
+                    .stroke(Theme.cardBorder, lineWidth: 1)
+            )
+            .overlay(alignment: .leading) {
+                UnevenRoundedRectangle(
+                    topLeadingRadius: Theme.cardRadius,
+                    bottomLeadingRadius: Theme.cardRadius
+                )
+                .fill(Theme.accent)
+                .frame(width: 4)
+            }
+            .shadow(
+                color: Theme.cardShadowColor,
+                radius: Theme.cardShadowRadius,
+                y: Theme.cardShadowY
+            )
+    }
+}
+
+// MARK: - SeverityCardStyle
+
+struct SeverityCardStyle: ViewModifier {
+    let severity: String
+
+    func body(content: Content) -> some View {
+        content
+            .padding()
+            .background(Theme.cardBackground)
+            .clipShape(RoundedRectangle(cornerRadius: Theme.cardRadius))
+            .overlay(
+                RoundedRectangle(cornerRadius: Theme.cardRadius)
+                    .stroke(Theme.cardBorder, lineWidth: 1)
+            )
+            .overlay(alignment: .leading) {
+                UnevenRoundedRectangle(
+                    topLeadingRadius: Theme.cardRadius,
+                    bottomLeadingRadius: Theme.cardRadius
+                )
+                .fill(Theme.severityColor(severity))
+                .frame(width: 4)
+            }
+            .shadow(
+                color: Theme.cardShadowColor,
+                radius: Theme.cardShadowRadius,
+                y: Theme.cardShadowY
+            )
+    }
+}
+
 extension View {
     func cardStyle() -> some View {
         modifier(CardStyle())
+    }
+
+    func slotEmptyCardStyle() -> some View {
+        modifier(SlotEmptyCardStyle())
+    }
+
+    func slotFilledCardStyle() -> some View {
+        modifier(SlotFilledCardStyle())
+    }
+
+    func severityCardStyle(severity: String) -> some View {
+        modifier(SeverityCardStyle(severity: severity))
     }
 }
 

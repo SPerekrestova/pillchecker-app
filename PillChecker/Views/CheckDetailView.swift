@@ -5,11 +5,17 @@ struct CheckDetailView: View {
     let recordID: UUID
     @Environment(AppNavigator.self) private var navigator
     @Environment(\.modelContext) private var modelContext
-    @Query private var allChecks: [CheckRecord]
+    @Query private var matchingChecks: [CheckRecord]
     @State private var showDeleteConfirmation = false
 
+    init(recordID: UUID) {
+        self.recordID = recordID
+        let id = recordID
+        _matchingChecks = Query(filter: #Predicate<CheckRecord> { $0.id == id })
+    }
+
     private var record: CheckRecord? {
-        allChecks.first { $0.id == recordID }
+        matchingChecks.first
     }
 
     var body: some View {
@@ -41,6 +47,13 @@ struct CheckDetailView: View {
                                 InteractionCard(interaction: interaction, animationDelay: Double(index) * 0.1)
                             }
                         }
+
+                        Text("For informational purposes only. Not a substitute for professional medical advice.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+                            .frame(maxWidth: .infinity)
+                            .padding(.top, 8)
                     }
                     .padding()
                 }

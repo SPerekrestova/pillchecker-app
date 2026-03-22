@@ -10,6 +10,16 @@ struct DrugSlotCard: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
 
     var body: some View {
+        Group {
+            if slot.isFilled {
+                cardContent.slotFilledCardStyle()
+            } else {
+                cardContent.slotEmptyCardStyle()
+            }
+        }
+    }
+
+    private var cardContent: some View {
         VStack(spacing: 12) {
             Text("Drug \(slotIndex + 1)")
                 .font(.subheadline)
@@ -24,7 +34,6 @@ struct DrugSlotCard: View {
             }
             .animation(reduceMotion ? nil : .easeInOut(duration: 0.2), value: slot.isFilled)
         }
-        .cardStyle()
     }
 
     private var filledContent: some View {

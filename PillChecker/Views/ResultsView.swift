@@ -18,15 +18,24 @@ struct ResultsView: View {
         self._viewModel = State(initialValue: ResultsViewModel(apiClient: apiClient))
     }
 
+    private var network = NetworkMonitor.shared
+
     var body: some View {
-        Group {
-            if let result = viewModel.result {
-                resultsContent(result)
-            } else if viewModel.error != nil {
-                errorView
-            } else {
-                loadingView
+        VStack(spacing: 0) {
+            if !network.isConnected {
+                OfflineBanner()
             }
+
+            Group {
+                if let result = viewModel.result {
+                    resultsContent(result)
+                } else if viewModel.error != nil {
+                    errorView
+                } else {
+                    loadingView
+                }
+            }
+            .frame(maxHeight: .infinity)
         }
         .navigationTitle("Results")
         .task {
@@ -38,27 +47,31 @@ struct ResultsView: View {
 
     private var loadingView: some View {
         VStack(spacing: 12) {
-            Image(systemName: "pill.fill")
-                .font(.system(size: 32))
-                .foregroundStyle(Theme.accent)
-                .symbolEffect(.pulse)
+            ZStack {
+                Circle()
+                    .fill(Theme.accentSoft)
+                    .frame(width: 56, height: 56)
+                Image(systemName: "pill.fill")
+                    .font(.system(size: 24))
+                    .foregroundStyle(Theme.accent)
+                    .symbolEffect(.pulse)
+            }
             Text("Checking interactions...")
-                .foregroundStyle(.secondary)
+                .font(.body)
+                .foregroundStyle(Theme.textPrimary)
+            Text("This usually takes a moment")
+                .font(.callout)
+                .foregroundStyle(Theme.textSecondary)
         }
+        .cardStyle()
+        .padding()
     }
 
     // MARK: - Error with retry
 
     private var errorView: some View {
-        ContentUnavailableView {
-            Label("Error", systemImage: "exclamationmark.triangle")
-        } description: {
-            Text(viewModel.error ?? "Something went wrong.")
-        } actions: {
-            Button("Try Again") {
-                Task { await checkInteractions() }
-            }
-            .buttonStyle(.bordered)
+        ErrorStateView(message: viewModel.error ?? "Something went wrong.") {
+            Task { await checkInteractions() }
         }
     }
 

@@ -12,13 +12,20 @@ struct DrugSearchView: View {
         self._viewModel = State(initialValue: DrugSearchViewModel(rxNormClient: rxNormClient))
     }
 
+    private var network = NetworkMonitor.shared
+
     var body: some View {
         VStack(spacing: 0) {
+            if !network.isConnected {
+                OfflineBanner()
+            }
+
             HStack {
                 TextField("Type drug name...", text: $viewModel.query)
                     .textFieldStyle(.roundedBorder)
                     .autocorrectionDisabled()
                     .textInputAutocapitalization(.never)
+                    .accessibilityLabel("Drug name search")
                     .onSubmit { selectCustom() }
                     .onChange(of: viewModel.query) {
                         viewModel.search()
@@ -32,14 +39,8 @@ struct DrugSearchView: View {
             .padding()
 
             if let error = viewModel.searchError {
-                VStack(spacing: 8) {
-                    Text(error)
-                        .foregroundStyle(Theme.critical)
-                        .font(.callout)
-                    Button("Retry") {
-                        viewModel.search()
-                    }
-                    .font(.callout)
+                ErrorStateView(message: error) {
+                    viewModel.search()
                 }
                 .padding(.top, 32)
             } else if !viewModel.suggestions.isEmpty {

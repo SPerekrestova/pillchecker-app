@@ -13,29 +13,11 @@ struct OnboardingView: View {
             )
             .tag(0)
 
-            VStack(spacing: 24) {
-                Spacer()
-
-                HStack(spacing: 32) {
-                    Image(systemName: "camera.fill")
-                        .font(.system(size: 36))
-                        .foregroundStyle(Theme.accent)
-                    Image(systemName: "keyboard")
-                        .font(.system(size: 36))
-                        .foregroundStyle(Theme.accent)
-                }
-
-                Text("Scan or Search")
-                    .font(.title.bold())
-
-                Text("Take a photo of the medicine label or search by name. Results are saved for reference.")
-                    .font(.body)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal, 32)
-
-                Spacer()
-
+            onboardingPage(
+                icons: ["camera.fill", "keyboard"],
+                title: "Scan or Search",
+                body: "Take a photo of the medicine label or search by name. Results are saved for reference."
+            ) {
                 Text("For informational purposes only. Not a substitute for professional medical advice. Always consult your doctor or pharmacist.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -58,13 +40,33 @@ struct OnboardingView: View {
         .indexViewStyle(.page(backgroundDisplayMode: .always))
     }
 
+    // MARK: - Single icon page
+
     private func onboardingPage(icon: String, title: String, body: String) -> some View {
+        onboardingPage(icons: [icon], title: title, body: body) {
+            EmptyView()
+        }
+    }
+
+    // MARK: - Multi-icon page with optional footer
+
+    private func onboardingPage<Footer: View>(
+        icons: [String],
+        title: String,
+        body: String,
+        @ViewBuilder footer: () -> Footer
+    ) -> some View {
         VStack(spacing: 24) {
             Spacer()
 
-            Image(systemName: icon)
-                .font(.system(size: 48))
-                .foregroundStyle(Theme.accent)
+            HStack(spacing: 32) {
+                ForEach(icons, id: \.self) { icon in
+                    Image(systemName: icon)
+                        .font(.system(size: icons.count > 1 ? 36 : 48))
+                        .foregroundStyle(Theme.accent)
+                        .accessibilityHidden(true)
+                }
+            }
 
             Text(title)
                 .font(.title.bold())
@@ -76,7 +78,8 @@ struct OnboardingView: View {
                 .padding(.horizontal, 32)
 
             Spacer()
-            Spacer()
+
+            footer()
         }
     }
 }
