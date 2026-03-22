@@ -26,6 +26,17 @@ enum Theme {
     static let textPrimary = Color(light: Color(hex: 0x1F3D33), dark: Color(hex: 0xF0FDF4))
     static let textSecondary = Color(light: Color(hex: 0x5F7A6F), dark: Color(hex: 0x94A3B8))
 
+    // MARK: Severity Helpers
+
+    static func severityColor(_ severity: String) -> Color {
+        switch severity.uppercased() {
+        case "MAJOR": return critical
+        case "MODERATE": return warning
+        case "MINOR": return caution
+        default: return .gray
+        }
+    }
+
     // MARK: Card Constants
 
     static let cardRadius: CGFloat = 12
@@ -76,9 +87,94 @@ struct CardStyle: ViewModifier {
     }
 }
 
+// MARK: - SlotEmptyCardStyle
+
+struct SlotEmptyCardStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .padding()
+            .background(Theme.accentSoft)
+            .clipShape(RoundedRectangle(cornerRadius: Theme.cardRadius))
+            .overlay(
+                RoundedRectangle(cornerRadius: Theme.cardRadius)
+                    .strokeBorder(Theme.accent, style: StrokeStyle(lineWidth: 2, dash: [6, 4]))
+            )
+    }
+}
+
+// MARK: - SlotFilledCardStyle
+
+struct SlotFilledCardStyle: ViewModifier {
+    func body(content: Content) -> some View {
+        content
+            .padding()
+            .background(Theme.cardBackground)
+            .clipShape(RoundedRectangle(cornerRadius: Theme.cardRadius))
+            .overlay(
+                RoundedRectangle(cornerRadius: Theme.cardRadius)
+                    .stroke(Theme.cardBorder, lineWidth: 1)
+            )
+            .overlay(alignment: .leading) {
+                UnevenRoundedRectangle(
+                    topLeadingRadius: Theme.cardRadius,
+                    bottomLeadingRadius: Theme.cardRadius
+                )
+                .fill(Theme.accent)
+                .frame(width: 4)
+            }
+            .shadow(
+                color: Theme.cardShadowColor,
+                radius: Theme.cardShadowRadius,
+                y: Theme.cardShadowY
+            )
+    }
+}
+
+// MARK: - SeverityCardStyle
+
+struct SeverityCardStyle: ViewModifier {
+    let severity: String
+
+    func body(content: Content) -> some View {
+        content
+            .padding()
+            .background(Theme.cardBackground)
+            .clipShape(RoundedRectangle(cornerRadius: Theme.cardRadius))
+            .overlay(
+                RoundedRectangle(cornerRadius: Theme.cardRadius)
+                    .stroke(Theme.cardBorder, lineWidth: 1)
+            )
+            .overlay(alignment: .leading) {
+                UnevenRoundedRectangle(
+                    topLeadingRadius: Theme.cardRadius,
+                    bottomLeadingRadius: Theme.cardRadius
+                )
+                .fill(Theme.severityColor(severity))
+                .frame(width: 4)
+            }
+            .shadow(
+                color: Theme.cardShadowColor,
+                radius: Theme.cardShadowRadius,
+                y: Theme.cardShadowY
+            )
+    }
+}
+
 extension View {
     func cardStyle() -> some View {
         modifier(CardStyle())
+    }
+
+    func slotEmptyCardStyle() -> some View {
+        modifier(SlotEmptyCardStyle())
+    }
+
+    func slotFilledCardStyle() -> some View {
+        modifier(SlotFilledCardStyle())
+    }
+
+    func severityCardStyle(severity: String) -> some View {
+        modifier(SeverityCardStyle(severity: severity))
     }
 }
 
