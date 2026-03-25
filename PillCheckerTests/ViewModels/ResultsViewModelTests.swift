@@ -27,7 +27,7 @@ final class ResultsViewModelTests: XCTestCase {
         await vm.checkInteractions(drugA: "Ibuprofen", drugB: "Warfarin")
 
         XCTAssertNotNil(vm.result)
-        XCTAssertFalse(vm.result!.safe)
+        XCTAssertEqual(vm.result!.safe, false)
         XCTAssertEqual(vm.result!.interactions.count, 1)
         XCTAssertFalse(vm.isLoading)
     }
@@ -69,7 +69,7 @@ final class ResultsViewModelTests: XCTestCase {
         XCTAssertFalse(vm.isLoading)
         XCTAssertNil(vm.error)
         XCTAssertNotNil(vm.result)
-        XCTAssertTrue(vm.result!.safe)
+        XCTAssertEqual(vm.result!.safe, true)
     }
 
     func testPreviousResultClearedOnNewCheck() async {
@@ -163,6 +163,6 @@ final class ResultsViewModelTests: XCTestCase {
         await vm.checkInteractions(drugA: "A", drugB: "B")
         XCTAssertNil(vm.error, "Error should be cleared after successful retry")
         XCTAssertNotNil(vm.result)
-        XCTAssertTrue(vm.result!.safe)
+        XCTAssertEqual(vm.result!.safe, true)
     }
 }

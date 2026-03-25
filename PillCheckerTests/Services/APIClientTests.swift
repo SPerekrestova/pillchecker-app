@@ -49,7 +49,7 @@ final class APIClientTests: XCTestCase {
         }
 
         let result = try await client.checkInteractions(drugs: ["Ibuprofen", "Warfarin"])
-        XCTAssertFalse(result.safe)
+        XCTAssertEqual(result.safe, false)
         XCTAssertEqual(result.interactions.count, 1)
     }
 

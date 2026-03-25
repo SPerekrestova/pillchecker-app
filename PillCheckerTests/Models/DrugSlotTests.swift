@@ -14,7 +14,7 @@ final class DrugSlotTests: XCTestCase {
         let slot = DrugSlot()
         slot.drug = DrugResult(
             rxcui: "5640", name: "Ibuprofen",
-            dosage: nil, form: nil, source: "ner", confidence: 0.9
+            dosage: nil, form: nil, source: "ner", confidence: 0.9, needsConfirmation: nil
         )
         XCTAssertEqual(slot.displayName, "Ibuprofen")
         XCTAssertTrue(slot.isFilled)
@@ -32,7 +32,7 @@ final class DrugSlotTests: XCTestCase {
         slot.manualName = "Aspirin"
         slot.drug = DrugResult(
             rxcui: nil, name: "Ibuprofen",
-            dosage: nil, form: nil, source: "ner", confidence: 0.9
+            dosage: nil, form: nil, source: "ner", confidence: 0.9, needsConfirmation: nil
         )
         XCTAssertEqual(slot.displayName, "Ibuprofen")
     }
@@ -41,7 +41,7 @@ final class DrugSlotTests: XCTestCase {
         let slot = DrugSlot()
         slot.drug = DrugResult(
             rxcui: nil, name: "Ibuprofen",
-            dosage: nil, form: nil, source: "ner", confidence: 0.9
+            dosage: nil, form: nil, source: "ner", confidence: 0.9, needsConfirmation: nil
         )
         slot.isScanned = true
         slot.clear()

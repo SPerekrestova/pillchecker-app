@@ -39,14 +39,14 @@ final class DrugInputViewModelTests: XCTestCase {
         XCTAssertFalse(vm.hasScanned)
         vm.setDrug(index: 0, drug: DrugResult(
             rxcui: nil, name: "Ibuprofen",
-            dosage: nil, form: nil, source: "ner", confidence: 0.9
+            dosage: nil, form: nil, source: "ner", confidence: 0.9, needsConfirmation: nil
         ))
         XCTAssertTrue(vm.hasScanned)
     }
 
     func testSetDrugFillsSlotAndMarksScanned() {
         let vm = DrugInputViewModel()
-        let drug = DrugResult(rxcui: "5640", name: "Ibuprofen", dosage: "400mg", form: "tablet", source: "ner", confidence: 0.95)
+        let drug = DrugResult(rxcui: "5640", name: "Ibuprofen", dosage: "400mg", form: "tablet", source: "ner", confidence: 0.95, needsConfirmation: nil)
 
         vm.setDrug(index: 0, drug: drug)
 
@@ -58,7 +58,7 @@ final class DrugInputViewModelTests: XCTestCase {
 
     func testSetManualNameFillsSlotAndClearsDrug() {
         let vm = DrugInputViewModel()
-        let drug = DrugResult(rxcui: "5640", name: "Ibuprofen", dosage: nil, form: nil, source: "ner", confidence: 0.9)
+        let drug = DrugResult(rxcui: "5640", name: "Ibuprofen", dosage: nil, form: nil, source: "ner", confidence: 0.9, needsConfirmation: nil)
         vm.setDrug(index: 0, drug: drug)
 
         vm.setManualName(index: 0, name: "Aspirin")
@@ -117,7 +117,7 @@ final class DrugInputViewModelTests: XCTestCase {
         let vm = DrugInputViewModel()
         let drug = DrugResult(
             rxcui: "5640", name: "Ibuprofen",
-            dosage: nil, form: nil, source: "ner", confidence: 0.9
+            dosage: nil, form: nil, source: "ner", confidence: 0.9, needsConfirmation: nil
         )
         vm.setDrug(index: 0, drug: drug)
         XCTAssertEqual(vm.slots[0].displayName, "Ibuprofen")
@@ -139,7 +139,7 @@ final class DrugInputViewModelTests: XCTestCase {
         // Now set a full drug result (unchanged name path in scan flow)
         let drug = DrugResult(
             rxcui: "161", name: "Paracetamol",
-            dosage: "500mg", form: nil, source: "ner", confidence: 0.95
+            dosage: "500mg", form: nil, source: "ner", confidence: 0.95, needsConfirmation: nil
         )
         vm.setDrug(index: 0, drug: drug)
         XCTAssertEqual(vm.slots[0].displayName, "Paracetamol")

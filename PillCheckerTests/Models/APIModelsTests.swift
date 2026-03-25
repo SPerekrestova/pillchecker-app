@@ -99,13 +99,13 @@ final class APIModelsTests: XCTestCase {
         """.data(using: .utf8)!
 
         let response = try JSONDecoder().decode(InteractionsResponse.self, from: json)
-        XCTAssertFalse(response.safe)
+        XCTAssertEqual(response.safe, false)
         XCTAssertEqual(response.interactions.count, 1)
     }
 
     func testInteractionResultIdIsOrderIndependent() {
-        let ab = InteractionResult(drugA: "Aspirin", drugB: "Ibuprofen", severity: "MAJOR", description: "d", management: "m")
-        let ba = InteractionResult(drugA: "Ibuprofen", drugB: "Aspirin", severity: "MAJOR", description: "d", management: "m")
+        let ab = InteractionResult(drugA: "Aspirin", drugB: "Ibuprofen", severity: "MAJOR", description: "d", management: "m", uncertain: nil)
+        let ba = InteractionResult(drugA: "Ibuprofen", drugB: "Aspirin", severity: "MAJOR", description: "d", management: "m", uncertain: nil)
         XCTAssertEqual(ab.id, ba.id, "ID should be the same regardless of drug order")
     }
 
@@ -118,7 +118,96 @@ final class APIModelsTests: XCTestCase {
         """.data(using: .utf8)!
 
         let response = try JSONDecoder().decode(InteractionsResponse.self, from: json)
-        XCTAssertTrue(response.safe)
+        XCTAssertEqual(response.safe, true)
         XCTAssertTrue(response.interactions.isEmpty)
+    }
+
+    func testDrugResultDecodesNeedsConfirmation() throws {
+        let json = """
+        {
+            "rxcui": "5640",
+            "name": "Ibuprofen",
+            "dosage": null,
+            "form": null,
+            "source": "ner",
+            "confidence": 0.72,
+            "needs_confirmation": true
+        }
+        """.data(using: .utf8)!
+
+        let result = try JSONDecoder().decode(DrugResult.self, from: json)
+        XCTAssertEqual(result.needsConfirmation, true)
+    }
+
+    func testDrugResultNeedsConfirmationDefaultsToNilWhenAbsent() throws {
+        let json = """
+        {
+            "rxcui": "5640",
+            "name": "Ibuprofen",
+            "dosage": null,
+            "form": null,
+            "source": "ner",
+            "confidence": 0.95
+        }
+        """.data(using: .utf8)!
+
+        let result = try JSONDecoder().decode(DrugResult.self, from: json)
+        XCTAssertNil(result.needsConfirmation)
+    }
+
+    func testInteractionResultDecodesUncertain() throws {
+        let json = """
+        {
+            "drug_a": "Ibuprofen",
+            "drug_b": "Warfarin",
+            "severity": "MAJOR",
+            "description": "Risk",
+            "management": "Avoid",
+            "uncertain": true
+        }
+        """.data(using: .utf8)!
+
+        let result = try JSONDecoder().decode(InteractionResult.self, from: json)
+        XCTAssertEqual(result.uncertain, true)
+    }
+
+    func testInteractionsResponseDecodesLimitations() throws {
+        let json = """
+        {
+            "interactions": [],
+            "safe": true,
+            "limitations": ["Pairwise only", "Not a substitute for medical advice"]
+        }
+        """.data(using: .utf8)!
+
+        let response = try JSONDecoder().decode(InteractionsResponse.self, from: json)
+        XCTAssertEqual(response.limitations?.count, 2)
+        XCTAssertEqual(response.limitations?[0], "Pairwise only")
+    }
+
+    func testInteractionsResponseSafeNull() throws {
+        let json = """
+        {
+            "interactions": [],
+            "safe": null
+        }
+        """.data(using: .utf8)!
+
+        let response = try JSONDecoder().decode(InteractionsResponse.self, from: json)
+        XCTAssertNil(response.safe)
+    }
+
+    func testAnalyzeResponseDecodesNote() throws {
+        let json = """
+        {
+            "drugs": [],
+            "raw_text": "阿莫西林",
+            "note": "Non-Latin text detected; only Latin-script drug names are supported"
+        }
+        """.data(using: .utf8)!
+
+        let response = try JSONDecoder().decode(AnalyzeResponse.self, from: json)
+        XCTAssertNotNil(response.note)
+        XCTAssertTrue(response.note!.contains("Latin"))
     }
 }

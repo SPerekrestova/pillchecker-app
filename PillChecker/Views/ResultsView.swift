@@ -80,7 +80,7 @@ struct ResultsView: View {
     private func resultsContent(_ result: InteractionsResponse) -> some View {
         ScrollView {
             VStack(spacing: 16) {
-                if result.safe {
+                if result.safe == true {
                     SafeResultView(drugA: drugA, drugB: drugB)
                 } else {
                     ForEach(Array(result.interactions.enumerated()), id: \.element.id) { index, interaction in
@@ -121,10 +121,10 @@ struct ResultsView: View {
         await viewModel.checkInteractions(drugA: drugA, drugB: drugB)
         if let result = viewModel.result {
             let generator = UINotificationFeedbackGenerator()
-            generator.notificationOccurred(result.safe ? .success : .warning)
+            generator.notificationOccurred(result.safe == true ? .success : .warning)
             UIAccessibility.post(
                 notification: .screenChanged,
-                argument: result.safe ? "No known interactions found" : "Interactions found"
+                argument: result.safe == true ? "No known interactions found" : "Interactions found"
             )
         }
     }
@@ -143,7 +143,7 @@ struct ResultsView: View {
         let record = CheckRecord(
             drugA: drugA,
             drugB: drugB,
-            safe: result.safe,
+            safe: result.safe ?? false,
             interactions: interactions,
             source: source
         )

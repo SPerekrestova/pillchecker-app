@@ -6,6 +6,7 @@ struct InteractionResult: Codable, Identifiable, Hashable {
     let severity: String
     let description: String
     let management: String
+    let uncertain: Bool?
 
     var id: String {
         let sorted = [drugA, drugB].sorted()
@@ -15,6 +16,6 @@ struct InteractionResult: Codable, Identifiable, Hashable {
     enum CodingKeys: String, CodingKey {
         case drugA = "drug_a"
         case drugB = "drug_b"
-        case severity, description, management
+        case severity, description, management, uncertain
     }
 }
