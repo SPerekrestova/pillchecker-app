@@ -104,6 +104,23 @@ struct ResultsView: View {
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
 
+                if let limitations = result.limitations, !limitations.isEmpty {
+                    DisclosureGroup("Important Information") {
+                        VStack(alignment: .leading, spacing: 4) {
+                            ForEach(limitations, id: \.self) { item in
+                                Text("• \(item)")
+                                    .font(.caption)
+                                    .foregroundStyle(Theme.textSecondary)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                        }
+                        .padding(.top, 4)
+                    }
+                    .font(.caption)
+                    .foregroundStyle(Theme.textSecondary)
+                    .padding(.horizontal)
+                }
+
                 Button {
                     saveAndDismiss(result)
                 } label: {
