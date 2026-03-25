@@ -207,7 +207,7 @@ final class APIModelsTests: XCTestCase {
         """.data(using: .utf8)!
 
         let response = try JSONDecoder().decode(AnalyzeResponse.self, from: json)
-        XCTAssertNotNil(response.note)
-        XCTAssertTrue(response.note!.contains("Latin"))
+        let note = try XCTUnwrap(response.note)
+        XCTAssertTrue(note.contains("Latin"))
     }
 }
