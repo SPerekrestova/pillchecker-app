@@ -80,7 +80,20 @@ struct ResultsView: View {
     private func resultsContent(_ result: InteractionsResponse) -> some View {
         ScrollView {
             VStack(spacing: 16) {
-                if result.safe == true {
+                if result.safe == nil {
+                    VStack(spacing: 12) {
+                        Image(systemName: "exclamationmark.triangle")
+                            .font(.system(size: 32))
+                            .foregroundStyle(Theme.caution)
+                        Text("Interaction data temporarily unavailable.")
+                            .font(.headline)
+                            .foregroundStyle(Theme.textPrimary)
+                        Text("Please try again later.")
+                            .font(.callout)
+                            .foregroundStyle(Theme.textSecondary)
+                    }
+                    .cardStyle()
+                } else if result.safe == true {
                     SafeResultView(drugA: drugA, drugB: drugB)
                 } else {
                     ForEach(Array(result.interactions.enumerated()), id: \.element.id) { index, interaction in
