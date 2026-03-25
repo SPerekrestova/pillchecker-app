@@ -80,7 +80,20 @@ struct ResultsView: View {
     private func resultsContent(_ result: InteractionsResponse) -> some View {
         ScrollView {
             VStack(spacing: 16) {
-                if result.safe {
+                if result.safe == nil {
+                    VStack(spacing: 12) {
+                        Image(systemName: "exclamationmark.triangle")
+                            .font(.system(size: 32))
+                            .foregroundStyle(Theme.caution)
+                        Text("Interaction data temporarily unavailable.")
+                            .font(.headline)
+                            .foregroundStyle(Theme.textPrimary)
+                        Text("Please try again later.")
+                            .font(.callout)
+                            .foregroundStyle(Theme.textSecondary)
+                    }
+                    .cardStyle()
+                } else if result.safe == true {
                     SafeResultView(drugA: drugA, drugB: drugB)
                 } else {
                     ForEach(Array(result.interactions.enumerated()), id: \.element.id) { index, interaction in
@@ -92,7 +105,8 @@ struct ResultsView: View {
                                 description: interaction.description,
                                 management: interaction.management
                             ),
-                            animationDelay: Double(index) * 0.1
+                            animationDelay: Double(index) * 0.1,
+                            uncertain: interaction.uncertain ?? false
                         )
                     }
                 }
@@ -103,10 +117,27 @@ struct ResultsView: View {
                     .multilineTextAlignment(.center)
                     .padding(.horizontal)
 
+                if let limitations = result.limitations, !limitations.isEmpty {
+                    DisclosureGroup("Important Information") {
+                        VStack(alignment: .leading, spacing: 4) {
+                            ForEach(Array(limitations.enumerated()), id: \.offset) { _, item in
+                                Text("• \(item)")
+                                    .font(.caption)
+                                    .foregroundStyle(Theme.textSecondary)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                        }
+                        .padding(.top, 4)
+                    }
+                    .font(.caption)
+                    .foregroundStyle(Theme.textSecondary)
+                    .padding(.horizontal)
+                }
+
                 Button {
                     saveAndDismiss(result)
                 } label: {
-                    Text("Save & Done")
+                    Text(result.safe == nil ? "Dismiss" : "Save & Done")
                 }
                 .buttonStyle(PrimaryButtonStyle())
                 .padding(.top, 8)
@@ -121,10 +152,10 @@ struct ResultsView: View {
         await viewModel.checkInteractions(drugA: drugA, drugB: drugB)
         if let result = viewModel.result {
             let generator = UINotificationFeedbackGenerator()
-            generator.notificationOccurred(result.safe ? .success : .warning)
+            generator.notificationOccurred(result.safe == true ? .success : .warning)
             UIAccessibility.post(
                 notification: .screenChanged,
-                argument: result.safe ? "No known interactions found" : "Interactions found"
+                argument: result.safe == true ? "No known interactions found" : "Interactions found"
             )
         }
     }
@@ -143,7 +174,7 @@ struct ResultsView: View {
         let record = CheckRecord(
             drugA: drugA,
             drugB: drugB,
-            safe: result.safe,
+            safe: result.safe ?? false,
             interactions: interactions,
             source: source
         )

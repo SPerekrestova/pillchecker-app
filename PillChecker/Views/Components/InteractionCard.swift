@@ -3,6 +3,7 @@ import SwiftUI
 struct InteractionCard: View {
     let interaction: SavedInteraction
     var animationDelay: Double = 0
+    var uncertain: Bool = false
 
     @State private var appeared = false
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
@@ -24,6 +25,12 @@ struct InteractionCard: View {
                 Text(interaction.management)
                     .font(.callout)
                     .foregroundStyle(.secondary)
+            }
+
+            if uncertain {
+                Text("Lower confidence — verify with a pharmacist.")
+                    .font(.caption)
+                    .foregroundStyle(Theme.textSecondary)
             }
         }
         .severityCardStyle(severity: interaction.severity)

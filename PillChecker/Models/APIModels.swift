@@ -7,10 +7,12 @@ struct AnalyzeRequest: Codable {
 struct AnalyzeResponse: Codable {
     let drugs: [DrugResult]
     let rawText: String
+    let note: String?
 
     enum CodingKeys: String, CodingKey {
         case drugs
         case rawText = "raw_text"
+        case note
     }
 }
 
@@ -20,5 +22,6 @@ struct InteractionsRequest: Codable {
 
 struct InteractionsResponse: Codable {
     let interactions: [InteractionResult]
-    let safe: Bool
+    let safe: Bool?
+    let limitations: [String]?
 }

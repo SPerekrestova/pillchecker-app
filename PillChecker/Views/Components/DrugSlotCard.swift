@@ -38,15 +38,23 @@ struct DrugSlotCard: View {
 
     private var filledContent: some View {
         HStack {
-            VStack(alignment: .leading) {
+            VStack(alignment: .leading, spacing: 2) {
                 Text(slot.displayName ?? "")
                     .font(.headline)
-                if slot.isScanned {
-                    Text("Scanned")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                HStack(spacing: 6) {
+                    if slot.isScanned {
+                        Text("Scanned")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    if slot.drug?.needsConfirmation == true {
+                        Text("Unverified")
+                            .font(.caption)
+                            .foregroundStyle(Theme.warning)
+                    }
                 }
             }
+            .accessibilityElement(children: .combine)
             Spacer()
             Button(action: onClear) {
                 Image(systemName: "xmark.circle.fill")

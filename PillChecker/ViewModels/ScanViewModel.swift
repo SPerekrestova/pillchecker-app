@@ -9,6 +9,7 @@ final class ScanViewModel {
     var editableDrugName: String = ""
     var isProcessing = false
     var error: String?
+    var note: String?
     var showCamera = false
 
     private let apiClient: APIClient
@@ -52,6 +53,7 @@ final class ScanViewModel {
         do {
             let response = try await apiClient.analyze(text: text)
             recognizedText = response.rawText
+            note = response.note
 
             if let drug = response.drugs.first {
                 extractedDrug = drug
@@ -72,5 +74,6 @@ final class ScanViewModel {
         extractedDrug = nil
         editableDrugName = ""
         error = nil
+        note = nil
     }
 }
