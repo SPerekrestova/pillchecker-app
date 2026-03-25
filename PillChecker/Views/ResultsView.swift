@@ -120,7 +120,7 @@ struct ResultsView: View {
                 if let limitations = result.limitations, !limitations.isEmpty {
                     DisclosureGroup("Important Information") {
                         VStack(alignment: .leading, spacing: 4) {
-                            ForEach(limitations, id: \.self) { item in
+                            ForEach(Array(limitations.enumerated()), id: \.offset) { _, item in
                                 Text("• \(item)")
                                     .font(.caption)
                                     .foregroundStyle(Theme.textSecondary)
@@ -137,7 +137,7 @@ struct ResultsView: View {
                 Button {
                     saveAndDismiss(result)
                 } label: {
-                    Text("Save & Done")
+                    Text(result.safe == nil ? "Dismiss" : "Save & Done")
                 }
                 .buttonStyle(PrimaryButtonStyle())
                 .padding(.top, 8)

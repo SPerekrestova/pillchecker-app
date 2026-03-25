@@ -52,6 +52,7 @@ final class ScanViewModel {
         do {
             let response = try await apiClient.analyze(text: text)
             recognizedText = response.rawText
+            // TODO: surface response.note in ScanMedicineView (e.g. non-Latin script warning)
 
             if let drug = response.drugs.first {
                 extractedDrug = drug
