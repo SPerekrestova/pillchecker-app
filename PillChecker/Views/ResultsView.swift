@@ -92,7 +92,8 @@ struct ResultsView: View {
                                 description: interaction.description,
                                 management: interaction.management
                             ),
-                            animationDelay: Double(index) * 0.1
+                            animationDelay: Double(index) * 0.1,
+                            uncertain: interaction.uncertain ?? false
                         )
                     }
                 }
