@@ -54,6 +54,7 @@ struct DrugSlotCard: View {
                     }
                 }
             }
+            .accessibilityElement(children: .combine)
             Spacer()
             Button(action: onClear) {
                 Image(systemName: "xmark.circle.fill")
