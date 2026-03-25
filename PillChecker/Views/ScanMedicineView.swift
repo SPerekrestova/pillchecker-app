@@ -97,6 +97,17 @@ struct ScanMedicineView: View {
                 .accessibilityAddTraits(.isStaticText)
         }
 
+        if let note = viewModel.note {
+            Label(note, systemImage: "exclamationmark.triangle")
+                .font(.callout)
+                .foregroundStyle(Theme.caution)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(12)
+                .background(Theme.caution.opacity(0.1))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .accessibilityAddTraits(.isStaticText)
+        }
+
         // Only show drug name field when we have an extracted drug
         if viewModel.extractedDrug != nil {
             TextField("Drug name", text: $viewModel.editableDrugName)
