@@ -12,23 +12,11 @@ struct HistoryView: View {
     var body: some View {
         Group {
             if checks.isEmpty {
-                VStack(spacing: 16) {
-                    ZStack {
-                        Circle()
-                            .fill(Theme.accentSoft)
-                            .frame(width: 64, height: 64)
-                        Image(systemName: "pill.fill")
-                            .font(.system(size: 28))
-                            .foregroundStyle(Theme.accent)
-                    }
-                    Text("No checks yet")
-                        .font(.body.weight(.semibold))
-                        .foregroundStyle(Theme.textPrimary)
-                    Text("Tap + to check your first drug interaction.")
-                        .font(.callout)
-                        .foregroundStyle(Theme.textSecondary)
-                }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                ContentUnavailableView(
+                    "No Checks Yet",
+                    systemImage: "pill",
+                    description: Text("Tap + to check your first drug interaction.")
+                )
             } else {
                 List {
                     ForEach(viewModel.filtered(checks)) { record in
