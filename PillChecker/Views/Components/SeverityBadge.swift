@@ -3,10 +3,11 @@ import SwiftUI
 struct SeverityBadge: View {
     let severity: String
 
+    // Badge-specific colors with WCAG AA contrast (4.5:1+)
     private var backgroundColor: Color {
         switch severity.uppercased() {
-        case "MAJOR": return Theme.severityColor(severity)
-        case "MODERATE": return Theme.severityColor(severity)
+        case "MAJOR": return Theme.critical
+        case "MODERATE": return Color(light: Color(hex: 0xC2410C), dark: Theme.warning)
         case "MINOR": return Color(light: Color(hex: 0xFDE68A), dark: Theme.caution)
         default: return .gray
         }

@@ -47,21 +47,12 @@ struct ResultsView: View {
 
     private var loadingView: some View {
         VStack(spacing: 12) {
-            ZStack {
-                Circle()
-                    .fill(Theme.accentSoft)
-                    .frame(width: 56, height: 56)
-                Image(systemName: "pill.fill")
-                    .font(.system(size: 24))
-                    .foregroundStyle(Theme.accent)
-                    .symbolEffect(.pulse)
-            }
+            Image(systemName: "pill.fill")
+                .font(.system(size: 32))
+                .foregroundStyle(Theme.accent)
+                .symbolEffect(.pulse)
             Text("Checking interactions...")
-                .font(.body)
-                .foregroundStyle(Theme.textPrimary)
-            Text("This usually takes a moment")
-                .font(.callout)
-                .foregroundStyle(Theme.textSecondary)
+                .foregroundStyle(.secondary)
         }
         .cardStyle()
         .padding()
