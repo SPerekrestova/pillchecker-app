@@ -197,6 +197,96 @@ final class APIModelsTests: XCTestCase {
         XCTAssertNil(response.safe)
     }
 
+    func testAnalyzeResponseDecodesDataSources() throws {
+        let json = """
+        {
+            "drugs": [],
+            "raw_text": "Ibuprofen 400mg",
+            "data_sources": {
+                "ner_model": "PharmaDetect-BioPatient-108M"
+            }
+        }
+        """.data(using: .utf8)!
+
+        let response = try JSONDecoder().decode(AnalyzeResponse.self, from: json)
+        let ds = try XCTUnwrap(response.dataSources)
+        XCTAssertEqual(ds.nerModel, "PharmaDetect-BioPatient-108M")
+    }
+
+    func testAnalyzeResponseDataSourcesDefaultsToNil() throws {
+        let json = """
+        {
+            "drugs": [],
+            "raw_text": "text"
+        }
+        """.data(using: .utf8)!
+
+        let response = try JSONDecoder().decode(AnalyzeResponse.self, from: json)
+        XCTAssertNil(response.dataSources)
+    }
+
+    func testInteractionsResponseDecodesDataSources() throws {
+        let json = """
+        {
+            "interactions": [],
+            "safe": true,
+            "data_sources": {
+                "drugbank_version": "5.1.12",
+                "severity_classifier": "DeBERTa-v3-base-zs"
+            }
+        }
+        """.data(using: .utf8)!
+
+        let response = try JSONDecoder().decode(InteractionsResponse.self, from: json)
+        let ds = try XCTUnwrap(response.dataSources)
+        XCTAssertEqual(ds.drugbankVersion, "5.1.12")
+        XCTAssertEqual(ds.severityClassifier, "DeBERTa-v3-base-zs")
+    }
+
+    func testInteractionsResponseDataSourcesNullVersion() throws {
+        let json = """
+        {
+            "interactions": [],
+            "safe": true,
+            "data_sources": {
+                "drugbank_version": null,
+                "severity_classifier": "DeBERTa-v3-base-zs"
+            }
+        }
+        """.data(using: .utf8)!
+
+        let response = try JSONDecoder().decode(InteractionsResponse.self, from: json)
+        let ds = try XCTUnwrap(response.dataSources)
+        XCTAssertNil(ds.drugbankVersion)
+        XCTAssertEqual(ds.severityClassifier, "DeBERTa-v3-base-zs")
+    }
+
+    func testInteractionsResponseDecodesError() throws {
+        let json = """
+        {
+            "interactions": [],
+            "safe": null,
+            "error": "DrugBank service unavailable"
+        }
+        """.data(using: .utf8)!
+
+        let response = try JSONDecoder().decode(InteractionsResponse.self, from: json)
+        XCTAssertEqual(response.error, "DrugBank service unavailable")
+        XCTAssertNil(response.safe)
+    }
+
+    func testInteractionsResponseErrorDefaultsToNil() throws {
+        let json = """
+        {
+            "interactions": [],
+            "safe": true
+        }
+        """.data(using: .utf8)!
+
+        let response = try JSONDecoder().decode(InteractionsResponse.self, from: json)
+        XCTAssertNil(response.error)
+    }
+
     func testAnalyzeResponseDecodesNote() throws {
         let json = """
         {
