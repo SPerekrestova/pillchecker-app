@@ -20,6 +20,10 @@ final class ResultsViewModel {
 
         do {
             result = try await apiClient.checkInteractions(drugs: [drugA, drugB])
+            if let apiError = result?.error {
+                self.error = apiError
+                result = nil
+            }
         } catch {
             self.error = (error as? APIError)?.errorDescription ?? "Something went wrong."
         }

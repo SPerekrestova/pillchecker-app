@@ -117,6 +117,19 @@ struct ResultsView: View {
                                     .foregroundStyle(Theme.textSecondary)
                                     .fixedSize(horizontal: false, vertical: true)
                             }
+
+                            if let ds = result.dataSources {
+                                Divider()
+                                    .padding(.vertical, 2)
+                                if let version = ds.drugbankVersion {
+                                    Text("Source: DrugBank \(version)")
+                                        .font(.caption2)
+                                        .foregroundStyle(Theme.textSecondary)
+                                }
+                                Text("Classifier: \(ds.severityClassifier)")
+                                    .font(.caption2)
+                                    .foregroundStyle(Theme.textSecondary)
+                            }
                         }
                         .padding(.top, 4)
                     }
